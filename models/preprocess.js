@@ -6,6 +6,8 @@ var https = require('https');
 var request = require("request");
 var cheerio = require("cheerio");
 
+/* jshint esnext: true */
+
 function preprocess(courses, callback) {
   var coursePairs = [];
   var subjects = new Set();
@@ -32,18 +34,20 @@ function preprocess(courses, callback) {
     });
   }
 
-  for (var i of subjects) {
-    getDom(i);
+  for (var j of subjects) {
+    getDom(j);
   }
-  // this stores the parsed courses
-  // format is as follows
-  // {
-  //   "isMatching": (boolean),
-  //   "sections": (a course section object - see below)
-  // }
-
   function parseDoms() {
-    var courses = {}
+
+    // this stores the parsed courses
+    // format is as follows
+    // {
+    //   "isMatching": (boolean),
+    //   "sections": (a course section object - see below)
+    // }
+    var courses = {};
+
+    /*jshint -W083 */
     for (var key in subjectDoms) {
       var $ = cheerio.load(subjectDoms[key]);
       $(".course").each(function(index, elem) {
@@ -55,6 +59,7 @@ function preprocess(courses, callback) {
         } else {
           courses[courseName].isMatching = false;
         }
+
         // this stores the parsed course sections
         // format is as follows:
         // {
@@ -63,6 +68,7 @@ function preprocess(courses, callback) {
         //   "T1": [time1]
         // }
         var courseSections = {};
+
         // this stores the course section table
         var courseSectionData =
           $(this).children(".sections").children("tr.sectodd, tr.secteven");
@@ -73,6 +79,7 @@ function preprocess(courses, callback) {
           // that row can be appended to the array from the current
           // section.
           var currentSectionCode;
+          var lectureTime;
           if (courseSectionData.eq(i).hasClass("newsect")) {
             // the newsect class is a row that denotes a new section
 
@@ -88,7 +95,7 @@ function preprocess(courses, callback) {
 
             // lecture times are stored in the second <td> if the current
             // row is a new section
-            var lectureTime =
+            lectureTime =
               courseSectionData.eq(i).children("td").eq(1).text();
             courseSections[currentSectionCode] = [lectureTime];
           } else {
@@ -98,7 +105,7 @@ function preprocess(courses, callback) {
 
             // lecture times are stored in the first <td> if the current
             // row is not a new section
-            var lectureTime =
+            lectureTime =
               courseSectionData.eq(i).children("td").eq(0).text();
             courseSections[currentSectionCode].push(lectureTime);
           }
