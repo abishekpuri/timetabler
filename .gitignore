@@ -1,0 +1,12 @@
+node_modules
+.env
+.env.save
+npm-debug.log*
+*.gypi
+.DS_Store
+docs
+index.html
+tags
+*~
+*.stackdump
+public/build
