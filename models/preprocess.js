@@ -37,11 +37,76 @@ function preprocess(courses, callback) {
   }
 
   function parseDoms() {
+    // this stores the parsed courses
+    // format is as follows
+    // {
+    //   "isMatching": (boolean),
+    //   "sections": (a course section object - see below)
+    // }
+    var courses = {}
+    var done = false;
     for (var key in subjectDoms) {
       var $ = cheerio.load(subjectDoms[key]);
-      $(".course > h2").each(function() {
-        console.log($(this).text());
+      $(".course").each(function(index, elem) {
+        var current = $(this);
+        var courseName = $(this).children("h2").text();
+        courses[courseName] = {};
+        if ($(this).children(".courseinfo").find(".matching").length) {
+          courses[courseName].isMatching = true;
+        } else {
+          courses[courseName].isMatching = false;
+        }
+        // this stores the parsed course sections
+        // format is as follows:
+        // {
+        //   "L1": [time1, time2],
+        //   "L2": [time1],
+        //   "T1": [time1]
+        // }
+        var courseSections = {};
+        // this stores the course section table
+        var courseSectionData =
+          $(this).children(".sections").children("tr.sectodd, tr.secteven");
+
+        for (var i = 0; i < courseSectionData.length; ++i) {
+          // current section code is stored so that if we are iterating
+          // a row that is not a new section, the time parsed from
+          // that row can be appended to the array from the current
+          // section.
+          var currentSectionCode;
+          if (courseSectionData.eq(i).hasClass("newsect")) {
+            // the newsect class is a row that denotes a new section
+
+            // stores the raw course section from the HTML
+            var courseSectionString =
+              courseSectionData.eq(i).children("td").eq(0).text();
+
+            // substring code deletes the course number from the
+            // section code string.
+            currentSectionCode =
+              courseSectionString.substring(0,
+                courseSectionString.lastIndexOf(" "));
+
+            // lecture times are stored in the second <td> if the current
+            // row is a new section
+            var lectureTime =
+              courseSectionData.eq(i).children("td").eq(1).text();
+            courseSections[currentSectionCode] = [lectureTime];
+          } else {
+            // if the row does not contain the newsect class, this means
+            // that the time parsed from this row belongs to the section
+            // that is currently being parsed.
+
+            // lecture times are stored in the first <td> if the current
+            // row is not a new section
+            var lectureTime =
+              courseSectionData.eq(i).children("td").eq(0).text();
+            courseSections[currentSectionCode].push(lectureTime);
+          }
+        }
+        courses[courseName].sections = courseSections;
       });
+      callback(courses);
     }
   }
 }
