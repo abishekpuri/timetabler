@@ -6,6 +6,8 @@ var https = require('https');
 var request = require("request");
 var cheerio = require("cheerio");
 
+/* jshint esnext: true */
+
 function preprocess(courses, callback) {
   var coursePairs = [];
   var subjects = new Set();
@@ -31,30 +33,85 @@ function preprocess(courses, callback) {
     });
   }
 
-  for (var i of subjects) {
-    getDom(i);
+  for (var j of subjects) {
+    getDom(j);
   }
-
   function parseDoms() {
-    parsedDoms = [];
+    // this stores the parsed courses
+    // format is as follows
+    // {
+    //   "isMatching": (boolean),
+    //   "sections": (a course section object - see below)
+    // }
+    var courses = {};
+
+    /*jshint -W083 */
     for (var key in subjectDoms) {
       var $ = cheerio.load(subjectDoms[key]);
-      $(".course").each(function() {
-        var name = $(this).find('h2').text();
-        for(i = 0;i < coursePairs.length;++i) {
-          if(name.indexOf(coursePairs[i][1])!= -1) {
-            var courseName = coursePairs[i][0] + coursePairs[i][1];
-            $(this).find($('.sections')).children($('.newsect')).each(function() {
-              // This gives the form MATH2352 L1 (3118)TuTh 01:30PM - 02:50PM
-              parsedDoms.push(courseName + ' '+ $(this)
-              .children("td:nth-child(-n+2)").text());
-            })
-            break;
+      $(".course").each(function(index, elem) {
+        var current = $(this);
+        var courseName = $(this).children("h2").text();
+        courses[courseName] = {};
+        if ($(this).children(".courseinfo").find(".matching").length) {
+          courses[courseName].isMatching = true;
+        } else {
+          courses[courseName].isMatching = false;
+        }
+
+        // this stores the parsed course sections
+        // format is as follows:
+        // {
+        //   "L1": [time1, time2],
+        //   "L2": [time1],
+        //   "T1": [time1]
+        // }
+        var courseSections = {};
+
+        // this stores the course section table
+        var courseSectionData =
+          $(this).children(".sections").children("tr.sectodd, tr.secteven");
+
+        for (var i = 0; i < courseSectionData.length; ++i) {
+          // current section code is stored so that if we are iterating
+          // a row that is not a new section, the time parsed from
+          // that row can be appended to the array from the current
+          // section.
+          var currentSectionCode;
+          var lectureTime;
+          if (courseSectionData.eq(i).hasClass("newsect")) {
+            // the newsect class is a row that denotes a new section
+
+            // stores the raw course section from the HTML
+            var courseSectionString =
+              courseSectionData.eq(i).children("td").eq(0).text();
+
+            // substring code deletes the course number from the
+            // section code string.
+            currentSectionCode =
+              courseSectionString.substring(0,
+                courseSectionString.lastIndexOf(" "));
+
+            // lecture times are stored in the second <td> if the current
+            // row is a new section
+            lectureTime =
+              courseSectionData.eq(i).children("td").eq(1).text();
+            courseSections[currentSectionCode] = [lectureTime];
+          } else {
+            // if the row does not contain the newsect class, this means
+            // that the time parsed from this row belongs to the section
+            // that is currently being parsed.
+
+            // lecture times are stored in the first <td> if the current
+            // row is not a new section
+            lectureTime =
+              courseSectionData.eq(i).children("td").eq(0).text();
+            courseSections[currentSectionCode].push(lectureTime);
           }
         }
+        courses[courseName].sections = courseSections;
       });
     }
-    callback(parsedDoms);
+    callback(courses);
   }
 }
 
