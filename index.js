@@ -29,7 +29,7 @@ app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 
 app.get("/", function(req, res) {
-  preprocessor.preprocess(['MATH 2352'], function(result) {
+  preprocessor.preprocess(['MATH 2352', 'COMP 1022P'], function(result) {
     console.log("HELLLOOOOOOOOOOOOOO!");
     res.send(result);
   });
