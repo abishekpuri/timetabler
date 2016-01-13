@@ -72,7 +72,10 @@ function preprocess(courses, callback) {
         // this stores the course section table
         var courseSectionData =
           $(this).children(".sections").children("tr.sectodd, tr.secteven");
-
+        // These variables keep track of how many of each type there are
+        var numLecs = 0;
+        var numTuts = 0;
+        var numLabs = 0;
         for (var i = 0; i < courseSectionData.length; ++i) {
           // current section code is stored so that if we are iterating
           // a row that is not a new section, the time parsed from
@@ -92,7 +95,19 @@ function preprocess(courses, callback) {
             currentSectionCode =
               courseSectionString.substring(0,
                 courseSectionString.lastIndexOf(" "));
-
+            // This is to keep a count of how many of each section there are
+            // So we can iterate through it properly when matching
+            if(currentSectionCode.indexOf('T') != -1) {
+              numTuts += 1;
+            }
+            if(currentSectionCode.indexOf('L') != -1) {
+              if(currentSectionCode.indexOf('A') != -1) {
+                numLabs += 1;
+              }
+              else {
+                numLecs += 1;
+              }
+            }
             // lecture times are stored in the second <td> if the current
             // row is a new section
             lectureTime =
@@ -111,6 +126,9 @@ function preprocess(courses, callback) {
           }
         }
         courses[courseName].sections = courseSections;
+        courses[courseName].numLecs = numLecs;
+        courses[courseName].numTuts = numTuts;
+        courses[courseName].numLabs = numLabs;
       });
     }
     // Here we can get the data for the courses that were inputted for processing
@@ -122,6 +140,7 @@ function preprocess(courses, callback) {
     callback(selectedCourses);
   }
 }
+
 
 module.exports = {
   "preprocess": preprocess

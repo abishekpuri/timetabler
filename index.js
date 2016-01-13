@@ -29,9 +29,7 @@ app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 
 app.get("/", function(req, res) {
-  preprocessor.preprocess(['MATH 2352', 'ACCT 1010'], function(result) {
-    res.render('pages/index',{'courses':result});
-  });
+  res.render('pages/index',{'courses':[]});
 });
 
 app.post("/process", function(req,res){

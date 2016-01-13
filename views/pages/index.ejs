@@ -1,10 +1,52 @@
 <!DOCTYPE html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+</head>
 <body>
+  <h2 align='center'> Timetabler </h2>
   <div id="courses">
-  <% for(i = 0;i < courses.length;i++) {
-    %> <h2> <%=JSON.stringify(courses[i]) %> </h2><br><br> <%
-  }%>
 </div>
+<br><br>
+View a courses timetable <br>
+<input type='text' id='course' value='COMP 3711'>
+<button id='send'>View </button>
+<button id='clear'>Clear All </button>
 <script>
+  $('#clear').on('click',function(event) {
+    $('#courses').html('<div></div>');
+  });
+  $('#send').on('click',function (event) {
+    var courses = [];
+    var input = $('#course').val().split(',');
+    for (x in input) {
+      courses.push(input[x]);
+    }
+      $.post('/process',{
+        'courses': courses
+      }).done(function(data) {
+        for( x in data) {
+          if(data[x]) {
+            $('#courses').append('<p>'+data[x].course+'</p>');
+            $ ('#courses').append('<p> Number of Possible Class Patterns : </p> <ul>');
+            numLecs = data[x].numLecs;
+            numTuts = (data[x].numTuts == 0) ? data[x].numLabs : data[x].numTuts;
+            for(i = 0;i < data[x].numLecs; ++i) {
+              var pattern = '<li>'+data[x].sections[Object.keys(data[x].sections)[i]];
+              for(j = (0 + numLecs);j < (numTuts+numLecs);++j) {
+                $('#courses').append(pattern+' and '+data[x].sections
+                [Object.keys(data[x].sections)[j]]+'</li><br>');
+              }
+              if(numTuts == 0) {
+                $("#courses").append(pattern+'</li>');
+              }
+            }
+          }
+          else {
+            alert("This course not available this sem");
+          }
+        }
+      });
+  });
+</script>
 
 </html>
