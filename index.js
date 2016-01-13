@@ -30,10 +30,15 @@ app.set("view engine", "ejs");
 
 app.get("/", function(req, res) {
   preprocessor.preprocess(['MATH 2352', 'COMP 1022P'], function(result) {
-    console.log("HELLLOOOOOOOOOOOOOO!");
-    res.send(result);
+    res.render('pages/index',{'times':result})
   });
 });
+
+app.post("/process", function(req,res){
+  preprocessor.preprocess(req.body.courses, function(result){
+    res.send(result);
+  });
+})
 
 app.use(function(req, res, next){
   res.status(404);

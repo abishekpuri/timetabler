@@ -16,7 +16,6 @@ function preprocess(courses, callback) {
     coursePairs.push(currentCourse);
     subjects.add(currentCourse[0]);
   }
-
   var subjectDoms = {};
   var counter = 0;
 
@@ -37,12 +36,25 @@ function preprocess(courses, callback) {
   }
 
   function parseDoms() {
+    parsedDoms = [];
     for (var key in subjectDoms) {
       var $ = cheerio.load(subjectDoms[key]);
-      $(".course > h2").each(function() {
-        console.log($(this).text());
+      $(".course").each(function() {
+        var name = $(this).find('h2').text();
+        for(i = 0;i < coursePairs.length;++i) {
+          if(name.indexOf(coursePairs[i][1])!= -1) {
+            var courseName = coursePairs[i][0] + coursePairs[i][1];
+            $(this).find($('.sections')).children($('.newsect')).each(function() {
+              // This gives the form MATH2352 L1 (3118)TuTh 01:30PM - 02:50PM
+              parsedDoms.push(courseName + ' '+ $(this)
+              .children("td:nth-child(-n+2)").text());
+            })
+            break;
+          }
+        }
       });
     }
+    callback(parsedDoms);
   }
 }
 
