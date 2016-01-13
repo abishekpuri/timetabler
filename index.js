@@ -29,7 +29,8 @@ app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 
 app.get("/", function(req, res) {
-  res.render('pages/index',{'courses':[]});
+  var allCourses = preprocessor.allCourses;
+  res.render('pages/index',{'courses':[],'allCourses':allCourses});
 });
 
 app.post("/process", function(req,res){

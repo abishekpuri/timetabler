@@ -11,9 +11,18 @@ View a courses timetable <br>
 <input type='text' id='course' value='COMP 3711'>
 <button id='send'>View </button>
 <button id='clear'>Clear All </button>
+<select id='allCourses'>
+  <% for (i in allCourses) {
+    %> <option value="<%=allCourses[i]%>"> <%=allCourses[i]%> </option><%
+  }%>
 <script>
   $('#clear').on('click',function(event) {
     $('#courses').html('<div></div>');
+  });
+  $('#allCourses').on('change',function(event){
+    var val = $('#allCourses').find(':selected').text();
+    val = val.substr(1,val.length);
+    $('#course').val(val);
   });
   $('#send').on('click',function (event) {
     var courses = [];
@@ -26,6 +35,7 @@ View a courses timetable <br>
       }).done(function(data) {
         for( x in data) {
           if(data[x]) {
+            // This serves as a proof of concept of how to do the class patterning
             $('#courses').append('<p>'+data[x].course+'</p>');
             $ ('#courses').append('<p> Number of Possible Class Patterns : </p> <ul>');
             numLecs = data[x].numLecs;
