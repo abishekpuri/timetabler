@@ -7,6 +7,8 @@ var bodyParser = require("body-parser");
 
 var app = express();
 
+var preprocessor = require("./models/preprocess.js");
+
 /* jshint esnext: true */
 
 /**
@@ -27,8 +29,10 @@ app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 
 app.get("/", function(req, res) {
-  sess = req.session;
-  res.render("pages/index");
+  preprocessor.preprocess(['MATH 2352'], function(result) {
+    console.log("HELLLOOOOOOOOOOOOOO!");
+    res.send(result);
+  });
 });
 
 app.use(function(req, res, next){
