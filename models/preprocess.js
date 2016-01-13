@@ -35,16 +35,15 @@ function preprocess(courses, callback) {
   for (var i of subjects) {
     getDom(i);
   }
+  // this stores the parsed courses
+  // format is as follows
+  // {
+  //   "isMatching": (boolean),
+  //   "sections": (a course section object - see below)
+  // }
 
   function parseDoms() {
-    // this stores the parsed courses
-    // format is as follows
-    // {
-    //   "isMatching": (boolean),
-    //   "sections": (a course section object - see below)
-    // }
     var courses = {}
-    var done = false;
     for (var key in subjectDoms) {
       var $ = cheerio.load(subjectDoms[key]);
       $(".course").each(function(index, elem) {
@@ -106,8 +105,8 @@ function preprocess(courses, callback) {
         }
         courses[courseName].sections = courseSections;
       });
-      callback(courses);
     }
+    callback(courses);
   }
 }
 
