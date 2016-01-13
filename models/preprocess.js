@@ -50,8 +50,10 @@ function preprocess(courses, callback) {
       var $ = cheerio.load(subjectDoms[key]);
       $(".course").each(function(index, elem) {
         var current = $(this);
-        var courseName = $(this).children("h2").text();
+        var courseName = $(this).children("h2").text().split('-')[0];
+        courseName = courseName.substr(0,courseName.length-1);
         courses[courseName] = {};
+        courses[courseName].course = courseName;
         if ($(this).children(".courseinfo").find(".matching").length) {
           courses[courseName].isMatching = true;
         } else {
@@ -111,7 +113,13 @@ function preprocess(courses, callback) {
         courses[courseName].sections = courseSections;
       });
     }
-    callback(courses);
+    // Here we can get the data for the courses that were inputted for processing
+    selectedCourses = [];
+    for(i = 0;i < coursePairs.length;i++) {
+      var name = coursePairs[i][0]+' '+coursePairs[i][1];
+      selectedCourses.push(courses[name]);
+    }
+    callback(selectedCourses);
   }
 }
 
