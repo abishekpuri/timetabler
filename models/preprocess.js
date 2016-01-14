@@ -144,7 +144,7 @@ function preprocess(courses, callback) {
 
 module.exports = {
   "preprocess": preprocess,
-  "allCourses":["ACCT 1010","ACCT 3020","ACCT 3210","ACCT 3610","ACCT 4410","ACCT 4610","ACCT 5100","ACCT 5140","ACCT 5160","ACCT 5180","ACCT 5210",
+  "allCourses": ["ACCT 1010","ACCT 3020","ACCT 3210","ACCT 3610","ACCT 4410","ACCT 4610","ACCT 5100","ACCT 5140","ACCT 5160","ACCT 5180","ACCT 5210",
     "ACCT 5220",
     "ACCT 5310",
     "ACCT 5410",
@@ -1140,14 +1140,20 @@ module.exports = {
       for(j = 0; j < numLecs;++j) {
         var courseStr = courses[i].sections[Object.keys(courses[i].sections)[j]];
         for(k = numLecs;k < (numTuts+numLecs);++k) {
+          //Need to develop bit more to accomodate matching tutorials
+          if(courses[i].isMatching && k!=(j+numLecs)) {
+            continue;
+          }
           courseStrTemp = courseStr + ' and ';
           courseStrTemp += courses[i].sections[Object.keys(courses[i].sections)[k]];
           courseTimes.push(courseStrTemp);
         }
         if(numTuts == 0) {
-          courseTimes.push(courseStr);
+          courseStrTemp = courseStr +' ';
+          courseTimes.push(courseStrTemp.substr(0,courseStrTemp.length -1));
         }
       }
+      console.log(courseTimes);
       allTimes.push(courseTimes);
     }
     names = names.substr(0,names.length - 5);
@@ -1159,6 +1165,9 @@ module.exports = {
     for(i in allTimes) {
       for(k in allTimes[i]){
         var lecture = allTimes[i][k];
+        if(typeof(lecture)!= 'string'){
+          console.log(allTimes[i]);
+        }
         var numDays = (lecture.split(' ')[0].length)/2;
         for(j = 1;j < numDays;++j) {
           var newDay = " and "+lecture.substr(0,2);
