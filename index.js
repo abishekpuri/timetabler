@@ -10,6 +10,8 @@ var app = express();
 var preprocessor = require("./models/preprocess.js");
 var courseList = require("./models/courseList.js");
 
+var testPreprocessor = require("./models/preprocessTesting.js");
+
 /* jshint esnext: true */
 
 /**
@@ -41,7 +43,14 @@ app.post("/process", function(req,res) {
   preprocessor.preprocess(req.body.courses, function(result) {
     res.send(result);
   });
-})
+});
+
+/* magic: do not sneeze in its presence */
+app.get("/preprocessTest", function(req, res) {
+  testPreprocessor.preprocess(["MATH 2352", "COMP 1022P"], function(result) {
+    res.send(result);
+  });
+});
 
 app.use(function(req, res, next) {
   res.status(404);
