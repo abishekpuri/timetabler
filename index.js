@@ -8,6 +8,7 @@ var bodyParser = require("body-parser");
 var app = express();
 
 var preprocessor = require("./models/preprocess.js");
+var courseList = require("./models/courseList.js");
 
 /* jshint esnext: true */
 
@@ -29,17 +30,20 @@ app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 
 app.get("/", function(req, res) {
-  var allCourses = preprocessor.allCourses;
-  res.render('pages/index',{'courses':[],'allCourses':allCourses});
+  var allCourses = courseList.allCourses;
+  res.render('pages/index', {
+    'courses': [],
+    'allCourses': allCourses
+  });
 });
 
-app.post("/process", function(req,res){
-  preprocessor.preprocess(req.body.courses, function(result){
+app.post("/process", function(req,res) {
+  preprocessor.preprocess(req.body.courses, function(result) {
     res.send(result);
   });
 })
 
-app.use(function(req, res, next){
+app.use(function(req, res, next) {
   res.status(404);
   res.format({
     "html": function() {
