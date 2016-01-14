@@ -5,6 +5,7 @@
 var https = require('https');
 var request = require("request");
 var cheerio = require("cheerio");
+var _ = require('underscore');
 
 /* jshint esnext: true */
 function processIntoTimeIntervals(timeArray) {
@@ -52,8 +53,6 @@ function parseTime(startTime, endTime) {
   var parsedTimes = [];
   while (start.hour < end.hour ||
     (start.hour === end.hour && start.minute < end.minute)) {
-    console.log("Start time: ", start);
-    console.log("End time: ", end);
     parsedTimes.push(timeToString(start));
     if (start.minute !== 30) {
       start.minute = 30;
@@ -75,6 +74,48 @@ function timeToString(time) {
     minute = "0" + minute;
   }
   return hour + ":" + minute;
+}
+
+function isSchedule(courses) {
+  function f(c,d,s,i) {
+    console.log('('+c + ','+d+')');
+    if(c==0 && d >=courses[c].length){
+      return 'No Solution';
+    }
+    if(d >=courses[c].length) {
+      //Remove the previous steps value
+      s.pop(s.indexOf(courses[c-1][i[c-1]]));
+      marker = i[c-1] + 1
+      i[c-1] = 0
+      return f(c-1,marker,s,i);
+    }
+    if(noConflict(s,courses[c][d])) {
+      s.push(courses[c][d]);
+      i[c] = d;
+      if(s.length == i.length) {
+        return s;
+      }
+      else {
+        return f(c+1,0,s,i);
+      }
+    }
+    else {
+        return f(c,d+1,s,i);
+    }
+  }
+  function noConflict(p,q) {
+    for ( var val in p) {
+      if(_.union(p[val],q).length != (p[val].length + q.length)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  var i = [];
+  for (var q in courses) {
+    i.push(0);
+  }
+  return f(0,0,[],i);
 }
 function preprocess(courses, callback) {
   var coursePairs = [];
@@ -263,10 +304,11 @@ function preprocess(courses, callback) {
         allTimes[i][k] = processIntoTimeIntervals(allTimes[i][k]);
       }
     }
+    var solution = isSchedule(allTimes);
     // Once the full matching function is made, this will be the callback for it
     callback({
       'clash': false,
-      'times': allTimes,
+      'times': solution,
       'names':names
     });
   }
@@ -276,7 +318,4 @@ function preprocess(courses, callback) {
 module.exports = {
   "preprocess": preprocess,
   //This will be where preprocessed courses go to get checked for clashes
-  match : function() {
-
-  }
 };
