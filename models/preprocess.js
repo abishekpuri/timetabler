@@ -7,7 +7,75 @@ var request = require("request");
 var cheerio = require("cheerio");
 
 /* jshint esnext: true */
+function processIntoTimeIntervals(timeArray) {
+  var returnArray = [];
+  for (var i = 0; i < timeArray.length; ++i) {
+    var timeIntervalString = timeArray[i];
+    var daysOfWeekArray = [];
+    var daysOfWeek =
+      timeIntervalString.substr(0, timeIntervalString.indexOf(" "));
+    while (daysOfWeek.length !== 0) {
+      daysOfWeekArray.push(daysOfWeek.substr(0, 2));
+      daysOfWeek = daysOfWeek.substr(2);
+    }
+    var timeInterval =
+      timeIntervalString.substr(timeIntervalString.indexOf(" ") + 1);
+    var startTime = timeInterval.substr(0, timeInterval.indexOf(" "));
+    var endTime = timeInterval.substr(timeInterval.lastIndexOf(" ") + 1);
+    var timeIntervalArray = parseTime(startTime, endTime);
 
+    // cartesian product
+    for (var j = 0; j < daysOfWeekArray.length; ++j) {
+      for (var k = 0; k < timeIntervalArray.length; ++k) {
+        returnArray.push(daysOfWeekArray[j] + " " + timeIntervalArray[k]);
+      }
+    }
+  }
+  return returnArray;
+}
+
+function parseTime(startTime, endTime) {
+  function processTime(time) {
+    var hour = parseInt(time.substr(0, 2), 10);
+    var minute = parseInt(time.substr(3, 5), 10);
+    if (startTime.substr(5) === "PM" && hour < 12) {
+      hour += 12;
+    }
+    return {
+      "hour": hour,
+      "minute": minute
+    };
+  }
+  var start = processTime(startTime);
+  var end = processTime(endTime);
+
+  var parsedTimes = [];
+  while (start.hour < end.hour ||
+    (start.hour === end.hour && start.minute < end.minute)) {
+    console.log("Start time: ", start);
+    console.log("End time: ", end);
+    parsedTimes.push(timeToString(start));
+    if (start.minute !== 30) {
+      start.minute = 30;
+    } else {
+      start.hour += 1;
+      start.minute = 0;
+    }
+  }
+  return parsedTimes;
+}
+
+function timeToString(time) {
+  var hour = time.hour.toString();
+  var minute = time.minute.toString();
+  while (hour.length < 2) {
+    hour = "0" + hour;
+  }
+  while (minute.length < 2) {
+    minute = "0" + minute;
+  }
+  return hour + ":" + minute;
+}
 function preprocess(courses, callback) {
   var coursePairs = [];
   var subjects = new Set();
@@ -140,7 +208,7 @@ function preprocess(courses, callback) {
     courses = selectedCourses;
     allTimes = [];
     names = '';
-    
+
     /* jshint shadow:true */
     for(var i = 0; i < courses.length; ++i) {
       names += courses[i].course + ' and ';
@@ -172,7 +240,9 @@ function preprocess(courses, callback) {
     //Step 2 : Split all strings so that there is only one day and then and
     // Only need to check the lecture component of time, tutorials only happen once
 
-    for (var i in allTimes) {
+    //This is the old implementation of my splitting level
+
+    /*for (var i in allTimes) {
       for (var k in allTimes[i]) {
         var lecture = allTimes[i][k];
         var numDays = (lecture.split(' ')[0].length) / 2;
@@ -181,7 +251,16 @@ function preprocess(courses, callback) {
           newDay += lecture.substr(numDays * 2, 16 + 2 * (numDays - 1));
           allTimes[i][k] = lecture.substr(2, lecture.length) + newDay;
           allTimes[i][k] = allTimes[i][k].split('and');
+          allTimes[i][k] = processIntoTimeIntervals(allTimes[i][k]);
         }
+      }
+    }*/
+
+    // THis is the hauton borrowed implementation (ty hauton)
+    for (var i in allTimes) {
+      for (var k in allTimes[i]) {
+        allTimes[i][k] = allTimes[i][k].split(' and ');
+        allTimes[i][k] = processIntoTimeIntervals(allTimes[i][k]);
       }
     }
     // Once the full matching function is made, this will be the callback for it
