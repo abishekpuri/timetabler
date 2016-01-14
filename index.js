@@ -35,7 +35,9 @@ app.get("/", function(req, res) {
 
 app.post("/process", function(req,res){
   preprocessor.preprocess(req.body.courses, function(result){
-    res.send(result);
+    preprocessor.match(result,function(data){
+      res.send(data);
+    })
   });
 })
 

@@ -1128,5 +1128,46 @@ module.exports = {
     "UROP 4100N",
     "WBBA 2010",
     "WBBA 2020"
-  ]
-};
+  ],
+  match: function(courses,callback) {
+    allTimes = [];
+    names = '';
+    for(i = 0;i < courses.length;++i) {
+      names += courses[i].course + ' and ';
+      courseTimes = [];
+      numLecs = courses[i].numLecs;
+      numTuts = (courses[i].numTuts == 0)?courses[i].numLabs:courses[i].numTuts;
+      for(j = 0; j < numLecs;++j) {
+        var courseStr = courses[i].sections[Object.keys(courses[i].sections)[j]];
+        for(k = numLecs;k < (numTuts+numLecs);++k) {
+          courseStrTemp = courseStr + ' and ';
+          courseStrTemp += courses[i].sections[Object.keys(courses[i].sections)[k]];
+          courseTimes.push(courseStrTemp);
+        }
+        if(numTuts == 0) {
+          courseTimes.push(courseStr);
+        }
+      }
+      allTimes.push(courseTimes);
+    }
+    names = names.substr(0,names.length - 5);
+    //allTimes is of the format [[All combinations for Course 1],
+    //[All combinations for Course 2] and so on]
+
+    //Step 2 : Split all strings so that there is only one day and then and
+    // Only need to check the lecture component of time, tutorials only happen once
+    for(i in allTimes) {
+      for(k in allTimes[i]){
+        var lecture = allTimes[i][k];
+        var numDays = (lecture.split(' ')[0].length)/2;
+        for(j = 1;j < numDays;++j) {
+          var newDay = " and "+lecture.substr(0,2);
+          newDay += lecture.substr(numDays*2,16+2*(numDays-1));
+          allTimes[i][k] = lecture.substr(2,lecture.length)+newDay;
+          allTimes[i][k] = allTimes[i][k].split('and');
+        }
+      }
+    }
+    callback({'clash':false,'times':allTimes,'names':names});
+  }
+}
