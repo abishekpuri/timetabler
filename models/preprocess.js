@@ -151,17 +151,19 @@ function preprocess(courses, callback) {
       numTuts = (courses[i].numTuts === 0)?courses[i].numLabs:courses[i].numTuts;
       for (var j = 0; j < numLecs; ++j) {
         slotTime = [];
-        for (var t in courses[i].sections[Object.keys(courses[i].sections)[j]]){
-            slotTime.push(courses[i].sections[Object.keys(courses[i].sections)[j]][t])
+        currentLec = courses[i].sections[Object.keys(courses[i].sections)[j]];
+        for (var t in currentLec){
+            slotTime.push(currentLec[t])
           }
         for(var k = numLecs; k < (numTuts + numLecs); ++k) {
+          currentTut = courses[i].sections[Object.keys(courses[i].sections)[k]];
           //Need to develop bit more to accomodate matching tutorials
           if(courses[i].isMatching && k!=(j+numLecs)) {
             continue;
           }
           slotTimeTemp = [];
-          slotTimeTemp.push(courses[i].sections[Object.keys(courses[i].sections)[j]][0]);
-          slotTimeTemp.push(courses[i].sections[Object.keys(courses[i].sections)[k]][0]);
+          slotTimeTemp.push(currentLec[0]);
+          slotTimeTemp.push(currentTut[0]);
           courseTimesTest.push(slotTimeTemp);
         }
         if (numTuts === 0) {
