@@ -8,7 +8,7 @@
 </div>
 <br><br>
 View a courses timetable <br>
-<input type='text' id='course' value='COMP 3711'>
+<input type='textarea' id='course'size='100'>
 <button id='send'>View </button>
 <button id='clear'>Clear All </button>
 <select id='allCourses'>
@@ -36,39 +36,22 @@ View a courses timetable <br>
     }
       $.post('/process',{
         'courses': courses
-      }).done(/*function(data) {
-        for( x in data) {
-          if(data[x]) {
-            // This serves as a proof of concept of how to do the class
-            //patterning
-            $('#courses').append('<p>'+data[x].course+'</p>');
-            $ ('#courses').append('<p> Number of Possible Class Patterns : </p>'
-              +'<ul>');
-            numLecs = data[x].numLecs;
-            numTuts = (data[x].numTuts == 0) ? data[x].numLabs:data[x].numTuts;
-            for(i = 0;i < data[x].numLecs; ++i) {
-              var pattern = '<li>'+data[x].sections[Object.keys
-                (data[x].sections)[i]];
-              for(j = (0 + numLecs);j < (numTuts+numLecs);++j) {
-                $('#courses').append(pattern+' and '+data[x].sections
-                [Object.keys(data[x].sections)[j]]+'</li><br>');
-              }
-              if(numTuts == 0) {
-                $("#courses").append(pattern+'</li>');
-              }
-            }
+      }).done(function(data) {
+        if(data.complete) {
+          $('#courses').append("<h2> These are the time slots for "+data.names+"</h2>");
+          if(data.times == 'No Solution') {
+            $("#courses").append('No Solution');
           }
           else {
-            alert("This course not available this sem");
+            for(i in data.times) {
+              $("#courses").append(data.names.split(' and ')[i]+' '+JSON.stringify(data.times[i])+'<br>');
+            }
           }
         }
-      }*/
-    function(data) {
-      $('#courses').append("<h2> These are the time slots for "+data.names+"</h2>");
-      for(i in data.times) {
-        $("#courses").append(JSON.stringify(data.times[i])+'<br>');
+        else {
+          $('#courses').append("<h2> No Solution found for "+data.names+"</h2>");
+        }
       }
-    }
     );
   });
 </script>

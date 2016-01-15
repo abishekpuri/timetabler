@@ -78,7 +78,6 @@ function timeToString(time) {
 
 function isSchedule(courses) {
   function f(c,d,s,i) {
-    console.log('('+c + ','+d+')');
     if(c==0 && d >=courses[c].length){
       return 'No Solution';
     }
@@ -115,7 +114,13 @@ function isSchedule(courses) {
   for (var q in courses) {
     i.push(0);
   }
-  return f(0,0,[],i);
+  var a = f(0,0,[],i);
+  if(a.length != i.length) {
+    return {'timeSlots':a,'complete':false};
+  }
+  else {
+    return {'timeSlots':a,'complete':true};
+  }
 }
 function preprocess(courses, callback) {
   var coursePairs = [];
@@ -307,8 +312,8 @@ function preprocess(courses, callback) {
     var solution = isSchedule(allTimes);
     // Once the full matching function is made, this will be the callback for it
     callback({
-      'clash': false,
-      'times': solution,
+      'complete': solution.complete,
+      'times': solution.timeSlots,
       'names':names
     });
   }
