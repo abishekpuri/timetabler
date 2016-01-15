@@ -146,33 +146,35 @@ function preprocess(courses, callback) {
     /* jshint shadow:true */
     for(var i = 0; i < courses.length; ++i) {
       names += courses[i].course + ' and ';
-      courseTimes = [];
+      courseTimesTest = [];
       numLecs = courses[i].numLecs;
       numTuts = (courses[i].numTuts === 0)?courses[i].numLabs:courses[i].numTuts;
       for (var j = 0; j < numLecs; ++j) {
-        var courseStr = courses[i].sections[Object.keys(courses[i].sections)[j]];
+        slotTime = [];
+        for (var t in courses[i].sections[Object.keys(courses[i].sections)[j]]){
+            slotTime.push(courses[i].sections[Object.keys(courses[i].sections)[j]][t])
+          }
         for(var k = numLecs; k < (numTuts + numLecs); ++k) {
           //Need to develop bit more to accomodate matching tutorials
           if(courses[i].isMatching && k!=(j+numLecs)) {
             continue;
           }
-          courseStrTemp = courseStr + ' and ';
-          courseStrTemp += courses[i].sections[Object.keys(courses[i].sections)[k]];
-          courseTimes.push(courseStrTemp);
+          slotTimeTemp = [];
+          slotTimeTemp.push(courses[i].sections[Object.keys(courses[i].sections)[j]][0]);
+          slotTimeTemp.push(courses[i].sections[Object.keys(courses[i].sections)[k]][0]);
+          courseTimesTest.push(slotTimeTemp);
         }
         if (numTuts === 0) {
-          courseStrTemp = courseStr +' ';
-          courseTimes.push(courseStrTemp.substr(0,courseStrTemp.length -1));
+          courseTimesTest.push(slotTime);
         }
       }
-      allTimes.push(courseTimes);
+      allTimes.push(courseTimesTest);
     }
     names = names.substr(0,names.length - 5);
 
     // THis is the hauton borrowed implementation (ty hauton)
     for (var i in allTimes) {
       for (var k in allTimes[i]) {
-        allTimes[i][k] = allTimes[i][k].split(' and ');
         allTimes[i][k] = timeHandling.processIntoTimeIntervals(allTimes[i][k]);
       }
     }
