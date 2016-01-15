@@ -268,44 +268,21 @@ function preprocess(courses, callback) {
           if(courses[i].isMatching && k!=(j+numLecs)) {
             continue;
           }
-          courseStrTemp = courseStr + ' and ';
-          courseStrTemp += courses[i].sections[Object.keys(courses[i].sections)[k]];
+          courseStrTemp = courseStr;
+          courseStrTemp.push(courses[i].sections[Object.keys(courses[i].sections)[k]][0]);
           courseTimes.push(courseStrTemp);
         }
         if (numTuts === 0) {
-          courseStrTemp = courseStr +' ';
-          courseTimes.push(courseStrTemp.substr(0,courseStrTemp.length -1));
+          courseTimes.push(courseStr);
         }
       }
       allTimes.push(courseTimes);
     }
+    console.log(allTimes);
     names = names.substr(0,names.length - 5);
-    //allTimes is of the format [[All combinations for Course 1],
-    //[All combinations for Course 2] and so on]
-
-    //Step 2 : Split all strings so that there is only one day and then and
-    // Only need to check the lecture component of time, tutorials only happen once
-
-    //This is the old implementation of my splitting level
-
-    /*for (var i in allTimes) {
-      for (var k in allTimes[i]) {
-        var lecture = allTimes[i][k];
-        var numDays = (lecture.split(' ')[0].length) / 2;
-        for (var j = 1; j < numDays; ++j) {
-          var newDay = " and " + lecture.substr(0, 2);
-          newDay += lecture.substr(numDays * 2, 16 + 2 * (numDays - 1));
-          allTimes[i][k] = lecture.substr(2, lecture.length) + newDay;
-          allTimes[i][k] = allTimes[i][k].split('and');
-          allTimes[i][k] = processIntoTimeIntervals(allTimes[i][k]);
-        }
-      }
-    }*/
-
     // THis is the hauton borrowed implementation (ty hauton)
     for (var i in allTimes) {
       for (var k in allTimes[i]) {
-        allTimes[i][k] = allTimes[i][k].split(' and ');
         allTimes[i][k] = processIntoTimeIntervals(allTimes[i][k]);
       }
     }
