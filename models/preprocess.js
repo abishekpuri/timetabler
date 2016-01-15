@@ -6,122 +6,10 @@ var https = require('https');
 var request = require("request");
 var cheerio = require("cheerio");
 var _ = require('underscore');
+var solutionFinder = require('./solutionFinder.js');
+var timeHandling = require('./timeHandling.js');
 
 /* jshint esnext: true */
-function processIntoTimeIntervals(timeArray) {
-  var returnArray = [];
-  for (var i = 0; i < timeArray.length; ++i) {
-    var timeIntervalString = timeArray[i];
-    var daysOfWeekArray = [];
-    var daysOfWeek =
-      timeIntervalString.substr(0, timeIntervalString.indexOf(" "));
-    while (daysOfWeek.length !== 0) {
-      daysOfWeekArray.push(daysOfWeek.substr(0, 2));
-      daysOfWeek = daysOfWeek.substr(2);
-    }
-    var timeInterval =
-      timeIntervalString.substr(timeIntervalString.indexOf(" ") + 1);
-    var startTime = timeInterval.substr(0, timeInterval.indexOf(" "));
-    var endTime = timeInterval.substr(timeInterval.lastIndexOf(" ") + 1);
-    var timeIntervalArray = parseTime(startTime, endTime);
-
-    // cartesian product
-    for (var j = 0; j < daysOfWeekArray.length; ++j) {
-      for (var k = 0; k < timeIntervalArray.length; ++k) {
-        returnArray.push(daysOfWeekArray[j] + " " + timeIntervalArray[k]);
-      }
-    }
-  }
-  return returnArray;
-}
-
-function parseTime(startTime, endTime) {
-  function processTime(time) {
-    var hour = parseInt(time.substr(0, 2), 10);
-    var minute = parseInt(time.substr(3, 5), 10);
-    if (startTime.substr(5) === "PM" && hour < 12) {
-      hour += 12;
-    }
-    return {
-      "hour": hour,
-      "minute": minute
-    };
-  }
-  var start = processTime(startTime);
-  var end = processTime(endTime);
-
-  var parsedTimes = [];
-  while (start.hour < end.hour ||
-    (start.hour === end.hour && start.minute < end.minute)) {
-    parsedTimes.push(timeToString(start));
-    if (start.minute !== 30) {
-      start.minute = 30;
-    } else {
-      start.hour += 1;
-      start.minute = 0;
-    }
-  }
-  return parsedTimes;
-}
-
-function timeToString(time) {
-  var hour = time.hour.toString();
-  var minute = time.minute.toString();
-  while (hour.length < 2) {
-    hour = "0" + hour;
-  }
-  while (minute.length < 2) {
-    minute = "0" + minute;
-  }
-  return hour + ":" + minute;
-}
-
-function isSchedule(courses) {
-  function f(c,d,s,i) {
-    if(c==0 && d >=courses[c].length){
-      return 'No Solution';
-    }
-    if(d >=courses[c].length) {
-      //Remove the previous steps value
-      s.pop(s.indexOf(courses[c-1][i[c-1]]));
-      marker = i[c-1] + 1
-      i[c-1] = 0
-      return f(c-1,marker,s,i);
-    }
-    if(noConflict(s,courses[c][d])) {
-      s.push(courses[c][d]);
-      i[c] = d;
-      if(s.length == i.length) {
-        return s;
-      }
-      else {
-        return f(c+1,0,s,i);
-      }
-    }
-    else {
-        return f(c,d+1,s,i);
-    }
-  }
-  function noConflict(p,q) {
-    for ( var val in p) {
-      if(_.union(p[val],q).length != (p[val].length + q.length)) {
-        return false;
-      }
-    }
-    return true;
-  }
-  var i = [];
-  for (var q in courses) {
-    i.push(0);
-  }
-  var a = f(0,0,[],i);
-  if(a.length != i.length) {
-    return {'timeSlots':a,'complete':false};
-  }
-  else {
-    return {'timeSlots':a,'complete':true};
-  }
-}
 function preprocess(courses, callback) {
   var coursePairs = [];
   var subjects = new Set();
@@ -285,10 +173,10 @@ function preprocess(courses, callback) {
     for (var i in allTimes) {
       for (var k in allTimes[i]) {
         allTimes[i][k] = allTimes[i][k].split(' and ');
-        allTimes[i][k] = processIntoTimeIntervals(allTimes[i][k]);
+        allTimes[i][k] = timeHandling.processIntoTimeIntervals(allTimes[i][k]);
       }
     }
-    var solution = isSchedule(allTimes);
+    var solution = solutionFinder.isSchedule(allTimes);
     // Once the full matching function is made, this will be the callback for it
     callback({
       'complete': solution.complete,
