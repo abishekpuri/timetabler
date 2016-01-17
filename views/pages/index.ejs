@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="/css/index.css">
 </head>
 <body>
   <h2 align='center'> Timetabler </h2>
@@ -21,6 +22,194 @@
     %> <option value="<%=allCourses[i]%>"> <%=allCourses[i]%> </option><%
   }%>
 </select>
+<table class='timetable' style='border:1px' align='center'>
+  <tr>
+      <th>Time</th>
+      <th>Monday</th>
+      <th>Tuesday</th>
+      <th>Wednesday</th>
+      <th>Thursday</th>
+      <th>Friday</th>
+  </tr>
+  <tr>
+    <td class='times'> 9:00 - 9:30 AM </td>
+    <td id='Mo 09:00'></td>
+    <td id='Tu 09:00'></td>
+    <td id='We 09:00'></td>
+    <td id='Th 09:00'></td>
+    <td id='Fr 09:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 9:30 - 10:00 AM </td>
+    <td id='Mo 09:30'></td>
+    <td id='Tu 09:30'></td>
+    <td id='We 09:30'></td>
+    <td id='Th 09:30'></td>
+    <td id='Fr 09:30'></td>
+  </tr>
+  <tr>
+    <td class='times'> 10:00 - 10:30 AM </td>
+    <td id='Mo 10:00'></td>
+    <td id='Tu 10:00'></td>
+    <td id='We 10:00'></td>
+    <td id='Th 10:00'></td>
+    <td id='Fr 10:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 10:30 - 11:00 AM </td>
+    <td id='Mo 10:30'></td>
+    <td id='Tu 10:30'></td>
+    <td id='We 10:30'></td>
+    <td id='Th 10:30'></td>
+    <td id='Fr 10:30'></td>
+  </tr>
+  <tr>
+    <td class='times'> 11:00 - 11:30 AM </td>
+    <td id='Mo 11:00'></td>
+    <td id='Tu 11:00'></td>
+    <td id='We 11:00'></td>
+    <td id='Th 11:00'></td>
+    <td id='Fr 11:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 11:30 - 12:00 PM </td>
+    <td id='Mo 11:30'></td>
+    <td id='Tu 11:30'></td>
+    <td id='We 11:30'></td>
+    <td id='Th 11:30'></td>
+    <td id='Fr 11:30'></td>
+  </tr>
+  <tr>
+    <td class='times'> 12:00 - 12:30 PM </td>
+    <td id='Mo 12:00'></td>
+    <td id='Tu 12:00'></td>
+    <td id='We 12:00'></td>
+    <td id='Th 12:00'></td>
+    <td id='Fr 12:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 12:30 - 1:00 PM </td>
+    <td id='Mo 12:30'></td>
+    <td id='Tu 12:30'></td>
+    <td id='We 12:30'></td>
+    <td id='Th 12:30'></td>
+    <td id='Fr 12:30'></td>
+  </tr>
+  <tr>
+    <td class='times'> 1:00 - 1:30 PM </td>
+    <td id='Mo 13:00'></td>
+    <td id='Tu 13:00'></td>
+    <td id='We 13:00'></td>
+    <td id='Th 13:00'></td>
+    <td id='Fr 13:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 1:30 - 2:00 PM </td>
+    <td id='Mo 13:30'></td>
+    <td id='Tu 13:30'></td>
+    <td id='We 13:30'></td>
+    <td id='Th 13:30'></td>
+    <td id='Fr 13:30'></td>
+  </tr>
+  <tr>
+    <td class='times'> 2:00 - 2:30 PM </td>
+    <td id='Mo 14:00'></td>
+    <td id='Tu 14:00'></td>
+    <td id='We 14:00'></td>
+    <td id='Th 14:00'></td>
+    <td id='Fr 14:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 2:30 - 3:00 PM </td>
+    <td id='Mo 14:30'></td>
+    <td id='Tu 14:30'></td>
+    <td id='We 14:30'></td>
+    <td id='Th 14:30'></td>
+    <td id='Fr 14:30'></td>
+  </tr>
+  <tr>
+    <td class='times'> 3:00 - 3:30 PM </td>
+    <td id='Mo 15:00'></td>
+    <td id='Tu 15:00'></td>
+    <td id='We 15:00'></td>
+    <td id='Th 15:00'></td>
+    <td id='Fr 15:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 3:30 - 4:00 PM </td>
+    <td id='Mo 15:30'></td>
+    <td id='Tu 15:30'></td>
+    <td id='We 15:30'></td>
+    <td id='Th 15:30'></td>
+    <td id='Fr 15:30'></td>
+  </tr>
+  <tr>
+    <td class='times'> 4:00 - 4:30 PM </td>
+    <td id='Mo 16:00'></td>
+    <td id='Tu 16:00'></td>
+    <td id='We 16:00'></td>
+    <td id='Th 16:00'></td>
+    <td id='Fr 16:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 4:30 - 5:00 PM </td>
+    <td id='Mo 16:30'></td>
+    <td id='Tu 16:30'></td>
+    <td id='We 16:30'></td>
+    <td id='Th 16:30'></td>
+    <td id='Fr 16:30'></td>
+  </tr>
+  <tr>
+    <td class='times'> 5:00 - 5:30 PM </td>
+    <td id='Mo 17:00'></td>
+    <td id='Tu 17:00'></td>
+    <td id='We 17:00'></td>
+    <td id='Th 17:00'></td>
+    <td id='Fr 17:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 5:30 - 6:00 PM </td>
+    <td id='Mo 17:30'></td>
+    <td id='Tu 17:30'></td>
+    <td id='We 17:30'></td>
+    <td id='Th 17:30'></td>
+    <td id='Fr 17:30'></td>
+  </tr>
+  <tr>
+    <td class='times'> 6:00 - 6:30 PM </td>
+    <td id='Mo 18:00'></td>
+    <td id='Tu 18:00'></td>
+    <td id='We 18:00'></td>
+    <td id='Th 18:00'></td>
+    <td id='Fr 18:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 6:30 - 7:00 PM </td>
+    <td id='Mo 18:30'></td>
+    <td id='Tu 18:30'></td>
+    <td id='We 18:30'></td>
+    <td id='Th 18:30'></td>
+    <td id='Fr 18:30'></td>
+  </tr>
+  <tr>
+    <td class='times'> 7:00 - 7:30 PM </td>
+    <td id='Mo 19:00'></td>
+    <td id='Tu 19:00'></td>
+    <td id='We 19:00'></td>
+    <td id='Th 19:00'></td>
+    <td id='Fr 19:00'></td>
+  </tr>
+  <tr>
+    <td class='times'> 7:30 - 8:00 PM </td>
+    <td id='Mo 19:30'></td>
+    <td id='Tu 19:30'></td>
+    <td id='We 19:30'></td>
+    <td id='Th 19:30'></td>
+    <td id='Fr 19:30'></td>
+  </tr>
+</table>
+<p style="margin-top:500px"> &copy Abishek Puri and Hauton Tsang 2016 </p>
+</body>
 <script>
   $('#clear').on('click',function(event) {
     $('#courses').html('<div></div>');
@@ -48,7 +237,7 @@
     var val = $('#allCourses').find(':selected').text();
     currentVal = $('#course').val();
 
-    val = val.substr(1,val.length);
+    //val = val.substr(0,val.length);
     val = (currentVal == '')?val: ','+val;
     $('#course').val(currentVal + val);
   });
@@ -62,6 +251,8 @@
         'courses': courses
       }).done(function(data) {
         if(data.complete) {
+          $('.timetable').find('td:not(.times)').html('-');
+          $('.timetable').find('td:not(.times)').attr('style','');
           $('#courses').append("<h2> These are the time slots for "+data.names+"</h2>");
           if(data.times == 'No Solution') {
             $("#courses").append('No Solution');
@@ -69,6 +260,10 @@
           else {
             for(i in data.times) {
               $("#courses").append(data.names.split(' and ')[i]+' '+JSON.stringify(data.times[i])+'<br>');
+              for(j in data.times[i]) {
+                $('[id='+JSON.stringify(data.times[i][j])+']').html(data.names.split(' and ')[i]);
+                $('[id='+JSON.stringify(data.times[i][j])+']').attr('style','background-color:#f1f1c1')
+              }
             }
           }
         }
@@ -79,6 +274,4 @@
     );
   });
 </script>
-<p style="margin-top:500px"> &copy Abishek Puri and Hauton Tsang 2016 </p>
-</body>
 </html>
