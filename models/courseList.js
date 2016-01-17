@@ -1,4 +1,5 @@
 module.exports = {
+  "allSubjects": ["ACCT", "BIEN", "BIPH", "BMED", "BTEC", "CBME", "CENG", "CHEM", "CHMS", "CIEM", "CIVL", "COMP", "CPEG", "CSIT", "ECON", "EEMT", "EESM", "ELEC", "ENEG", "ENGG", "ENTR", "ENVR", "ENVS", "EVNG", "EVSM", "FINA", "GBUS", "GNED", "HART", "HLTH", "HMMA", "HUMA", "IBTM", "IDPO", "IELM", "ISOM", "JEVE", "LABU", "LANG", "LIFS", "MAFS", "MALE", "MARK", "MATH", "MECH", "MESF", "MGCS", "MGMT", "MIMT", "NANO", "PHYS", "RMBI", "SBMT", "SCIE", "SHSS", "SOSC", "SSMA", "TEMG", "UROP", "WBBA"],
   "allCourses": ["ACCT 1010",
     "ACCT 3020",
     "ACCT 3210",

@@ -11,6 +11,11 @@
   <input type='textarea' id='course'size='100'>
   <button id='send'>View </button>
 <button id='clear'>Clear All </button>
+<select id='allSubjects'>
+  <% for (i in allSubjects) {
+    %> <option value="<%=allSubjects[i]%>"> <%=allSubjects[i]%> </option><%
+  }%>
+</select>
 <select id='allCourses'>
   <% for (i in allCourses) {
     %> <option value="<%=allCourses[i]%>"> <%=allCourses[i]%> </option><%
@@ -20,6 +25,24 @@
   $('#clear').on('click',function(event) {
     $('#courses').html('<div></div>');
     $('#course').val('');
+  });
+  $('#allSubjects').on('change',function(event){
+    var b = <%- JSON.stringify(allCourses) %>;
+    var selectedSubject = $('#allSubjects option:selected').text();
+    //repopulate #allCourses
+    $('#allCourses option').each(function(){
+      this.remove();
+    });
+
+    for(var i in b) {
+      $('#allCourses').append($('<option>', {value:b[i], text:b[i]}));
+    }
+
+    $('#allCourses').find('option').each(function(){
+      if(this.text.substr(0,5)!=selectedSubject.substr(1,5)) {
+        this.remove();
+        }
+    });
   });
   $('#allCourses').on('change',function(event){
     var val = $('#allCourses').find(':selected').text();

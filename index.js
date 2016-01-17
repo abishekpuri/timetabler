@@ -33,9 +33,11 @@ app.set("view engine", "ejs");
 
 app.get("/", function(req, res) {
   var allCourses = courseList.allCourses;
+  var allSubjects = courseList.allSubjects;
   res.render('pages/index', {
     'courses': [],
-    'allCourses': allCourses
+    'allCourses': allCourses,
+    'allSubjects': allSubjects
   });
 });
 
