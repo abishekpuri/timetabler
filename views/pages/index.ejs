@@ -22,6 +22,8 @@
     %> <option value="<%=allCourses[i]%>"> <%=allCourses[i]%> </option><%
   }%>
 </select>
+<div class ='loading'>
+</div>
 <table class='timetable' style='border:1px' align='center'>
   <tr>
       <th>Time</th>
@@ -82,9 +84,11 @@ for(var i = 1;i < times.length;++i) {
     for (x in input) {
       courses.push(input[x]);
     }
+    $('.loading').append('<img class="loader" src="/img/ajax-loader.gif"></img>');
       $.post('/process',{
         'courses': courses
       }).done(function(data) {
+        $('.loader').remove();
         $('.timetable').find('td:not(.times)').html('-');
         $('.timetable').find('td:not(.times)').attr('style','');
         if(data.complete) {
