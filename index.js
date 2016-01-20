@@ -4,14 +4,14 @@
  */
 var express = require("express");
 var bodyParser = require("body-parser");
-
+var _ = require('underscore');
 var app = express();
 
 var preprocessor = require("./models/preprocess.js");
 var courseList = require("./models/courseList.js");
 
 var testPreprocessor = require("./models/preprocessTesting.js");
-
+var solutionFinder = require('./models/solutionFinder.js');
 /* jshint esnext: true */
 
 /**
@@ -40,10 +40,11 @@ app.get("/", function(req, res) {
     'allSubjects': allSubjects
   });
 });
-
+var currentTime;
 app.post("/process", function(req,res) {
   preprocessor.preprocess(req.body.courses, function(result) {
     res.send(result);
+    currentTIme = _.flatten(result.times);
   });
 });
 
@@ -54,6 +55,29 @@ app.get("/preprocessTest", function(req, res) {
   });
 });
 
+app.get('/available',function(req,res) {
+  var courses = courseList.allCourses;
+  courses = courses.filter(function(i) {
+    return (i.substr(0,4) == 'MATH');
+  });
+  var myTimes = [];
+  myTimes.push(_.flatten(["Mo 10:30","Mo 11:00","Mo 11:30","We 10:30","We 11:00","We 11:30","Th 16:30","Th 17:00","Th 17:30","Th 18:00","Mo 12:00","Mo 12:30","Mo 13:00","We 12:00","We 12:30","We 13:00","Fr 10:30","Fr 11:00","We 15:00","We 15:30","We 16:00","Fr 15:00","Fr 15:30","Fr 16:00","Mo 09:00","Mo 09:30","Mo 10:00","We 09:00","We 09:30","We 10:00","Tu 11:00","Tu 11:30","We 13:30","We 14:00","We 14:30","Fr 13:30","Fr 14:00","Fr 14:30","Tu 16:30","Tu 17:00","Tu 13:30","Tu 14:00","Tu 14:30","Th 13:30","Th 14:00","Th 14:30","Mo 13:30","Mo 14:00"]));
+  var list = [];
+  preprocessor.preprocess(courses, function(result) {
+    for (var i in result.allTimes) {
+      var checkArray = [];
+      checkArray.push(result.allTimes[i]);
+      checkArray.push(myTimes);
+      var noConflict = solutionFinder.isSchedule(checkArray).complete;
+      if(noConflict) {
+        list.push(result.names.split(' and ')[i]);
+      }
+      if(i == result.allTimes.length - 1) {
+        res.send(list);
+      }
+    }
+  });
+});
 app.use(function(req, res, next) {
   res.status(404);
   res.format({

@@ -185,7 +185,8 @@ function preprocess(courses, callback) {
     callback({
       'complete': solution.complete,
       'times': solution.timeSlots,
-      'names':names
+      'names':names,
+      'allTimes': allTimes
     });
   }
 }
