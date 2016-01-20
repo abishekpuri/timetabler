@@ -55,13 +55,14 @@ app.get("/preprocessTest", function(req, res) {
   });
 });
 
-app.get('/available',function(req,res) {
+app.post('/available',function(req,res) {
   var courses = courseList.allCourses;
   courses = courses.filter(function(i) {
-    return (i.substr(0,4) == 'MATH');
+    return (i.substr(0,4) == req.body.subjects.trim());
   });
+  console.log('',courses);
   var myTimes = [];
-  myTimes.push(_.flatten(["Mo 10:30","Mo 11:00","Mo 11:30","We 10:30","We 11:00","We 11:30","Th 16:30","Th 17:00","Th 17:30","Th 18:00","Mo 12:00","Mo 12:30","Mo 13:00","We 12:00","We 12:30","We 13:00","Fr 10:30","Fr 11:00","We 15:00","We 15:30","We 16:00","Fr 15:00","Fr 15:30","Fr 16:00","Mo 09:00","Mo 09:30","Mo 10:00","We 09:00","We 09:30","We 10:00","Tu 11:00","Tu 11:30","We 13:30","We 14:00","We 14:30","Fr 13:30","Fr 14:00","Fr 14:30","Tu 16:30","Tu 17:00","Tu 13:30","Tu 14:00","Tu 14:30","Th 13:30","Th 14:00","Th 14:30","Mo 13:30","Mo 14:00"]));
+  myTimes.push(_.flatten(req.body.currentSchedule));
   var list = [];
   preprocessor.preprocess(courses, function(result) {
     for (var i in result.allTimes) {
