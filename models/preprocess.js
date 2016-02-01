@@ -149,25 +149,37 @@ function preprocess(courses, callback) {
       courseTimesTest = [];
       numLecs = courses[i].numLecs;
       numTuts = (courses[i].numTuts === 0)?courses[i].numLabs:courses[i].numTuts;
-      for (var j = 0; j < numLecs; ++j) {
-        slotTime = [];
-        currentLec = courses[i].sections[Object.keys(courses[i].sections)[j]];
-        for (var t in currentLec){
-            slotTime.push(currentLec[t])
-          }
-        for(var k = numLecs; k < (numTuts + numLecs); ++k) {
+      if(numLecs == 0) {
+        for (var k = 0;k < numTuts;++k) {
           currentTut = courses[i].sections[Object.keys(courses[i].sections)[k]];
-          //Need to develop bit more to accomodate matching tutorials
-          if(courses[i].isMatching && k!=(j+numLecs)) {
-            continue;
-          }
           slotTimeTemp = [];
-          slotTimeTemp.push(currentLec[0]);
-          slotTimeTemp.push(currentTut[0]);
+          for(var q = 0;q < currentTut.length;++q) {
+            slotTimeTemp.push(currentTut[q]);
+          }
           courseTimesTest.push(slotTimeTemp);
         }
-        if (numTuts === 0) {
-          courseTimesTest.push(slotTime);
+      }
+      else {
+        for (var j = 0; j < numLecs; ++j) {
+          slotTime = [];
+          currentLec = courses[i].sections[Object.keys(courses[i].sections)[j]];
+          for (var t in currentLec){
+              slotTime.push(currentLec[t])
+            }
+          for(var k = numLecs; k < (numTuts + numLecs); ++k) {
+            currentTut = courses[i].sections[Object.keys(courses[i].sections)[k]];
+            //Need to develop bit more to accomodate matching tutorials
+            if(courses[i].isMatching && k!=(j+numLecs)) {
+              continue;
+            }
+            slotTimeTemp = [];
+            slotTimeTemp.push(currentLec[0]);
+            slotTimeTemp.push(currentTut[0]);
+            courseTimesTest.push(slotTimeTemp);
+          }
+          if (numTuts === 0) {
+            courseTimesTest.push(slotTime);
+          }
         }
       }
       allTimes.push(courseTimesTest);
