@@ -25,113 +25,117 @@
 </select>
 <div class ='loading'>
 </div>
-<div class= 'availableCourses' align='left' width='100px'>
-  <p > Find Available Courses given your current schedule : </p>
-  <select id='availableSubjects'>
-    <% for (i in allSubjects) {
-      %> <option value="<%=allSubjects[i]%>"> <%=allSubjects[i]%> </option><%
-    }%>
-  </select>
-  <div class= 'courseDisplay'>
+<div class='masterDiv'>
+  <div class= 'availableCourses' style='width: 20%; float:left'>
+    <p > Find Available Courses given your current schedule : </p>
+    <select id='availableSubjects'>
+      <% for (i in allSubjects) {
+        %> <option value="<%=allSubjects[i]%>"> <%=allSubjects[i]%> </option><%
+      }%>
+    </select>
+    <div class= 'courseDisplay'>
+    </div>
+  </div>
+  <div style="width: 80%; float:right">
+    <table class='timetable' style='border:1px;margin-right:50px' align='right'>
+      <tr>
+          <th>Time</th>
+          <th>Monday</th>
+          <th>Tuesday</th>
+          <th>Wednesday</th>
+          <th>Thursday</th>
+          <th>Friday</th>
+      </tr>
+    </table>
   </div>
 </div>
-<table class='timetable' style='border:1px;margin-right:200px' align='right'>
-  <tr>
-      <th>Time</th>
-      <th>Monday</th>
-      <th>Tuesday</th>
-      <th>Wednesday</th>
-      <th>Thursday</th>
-      <th>Friday</th>
-  </tr>
-</table>
 <p style="margin-top:550px" align='center'> &copy Abishek Puri and Hauton Tsang 2016 </p>
 </body>
 <script>
-var days = ['Mo ','Tu ','We ','Th ','Fr '];
-var times = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
-//initiliaze the timetable
-for(var i = 1;i < times.length;++i) {
-  $('.timetable tr:last').after('<tr><td class=times>'+times[i-1]+'-'+times[i]+'</td>');
-  for(var j = 0;j < days.length;++j) {
-    var className = JSON.stringify(days[j]+times[i-1]);
-    $('td:last').after('<td id='+className+'></td>');
+  var days = ['Mo ','Tu ','We ','Th ','Fr '];
+  var times = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+  //initiliaze the timetable
+  for(var i = 1;i < times.length;++i) {
+    $('.timetable tr:last').after('<tr><td class=times>'+times[i-1]+'-'+times[i]+'</td>');
+    for(var j = 0;j < days.length;++j) {
+      var className = JSON.stringify(days[j]+times[i-1]);
+      $('td:last').after('<td id='+className+'></td>');
+    }
+    $('td:last').after('</tr>');
   }
-  $('td:last').after('</tr>');
-}
-  $('#clear').on('click',function(event) {
-    $('#courses').html('<div></div>');
-    $('#course').val('');
-  });
-  $('#allSubjects').on('change',function(event){
-    var b = <%- JSON.stringify(allCourses) %>;
-    var selectedSubject = $('#allSubjects option:selected').text();
-    //repopulate #allCourses
-    $('#allCourses option').each(function(){
-      this.remove();
+    $('#clear').on('click',function(event) {
+      $('#courses').html('<div></div>');
+      $('#course').val('');
     });
-
-    for(var i in b) {
-      $('#allCourses').append($('<option>', {value:b[i], text:b[i]}));
-    }
-
-    $('#allCourses').find('option').each(function(){
-      if(this.text.substr(0,5)!=selectedSubject.substr(1,5)) {
+    $('#allSubjects').on('change',function(event){
+      var b = <%- JSON.stringify(allCourses) %>;
+      var selectedSubject = $('#allSubjects option:selected').text();
+      //repopulate #allCourses
+      $('#allCourses option').each(function(){
         this.remove();
-        }
-    });
-  });
-  $('#allCourses').on('change',function(event){
-    var val = $('#allCourses').find(':selected').text();
-    currentVal = $('#course').val();
+      });
 
-    //val = val.substr(0,val.length);
-    val = (currentVal == '')?val: ','+val;
-    $('#course').val(currentVal + val);
-  });
-  $('#send').on('click',function (event) {
-    var courses = [];
-    var input = $('#course').val().split(',');
-    for (x in input) {
-      courses.push(input[x]);
-    }
-    $('.loading').append('<img class="loader" src="/img/ajax-loader.gif"></img>');
-      $.post('/process',{
-        'courses': courses
-      }).done(function(data) {
-        $('.loader').remove();
-        $('.timetable').find('td:not(.times)').html('-');
-        $('.timetable').find('td:not(.times)').attr('style','');
-        if(data.complete) {
-          //$('#courses').append("<h2> These are the time slots for "+data.names+"</h2>");
-          if(data.times == 'No Solution') {
-            $("#courses").append('No Solution');
+      for(var i in b) {
+        $('#allCourses').append($('<option>', {value:b[i], text:b[i]}));
+      }
+
+      $('#allCourses').find('option').each(function(){
+        if(this.text.substr(0,5)!=selectedSubject.substr(1,5)) {
+          this.remove();
           }
-          else {
-            for(i in data.times) {
-              //$("#courses").append(data.names.split(' and ')[i]+' '+JSON.stringify(data.times[i])+'<br>');
-              for(j in data.times[i]) {
-                var name = data.names.split(' and ')[i];
-                $('[id='+JSON.stringify(data.times[i][j])+']').html('<a target=_blank href=https://w5.ab.ust.hk/wcq/cgi-bin/1530/subject/'+name.substr(0,4)+
-                '/#'+name.substr(0,4)+name.substr(5,9)+ '>'+data.names.split(' and ')[i]+'</a>');
-                $('[id='+JSON.stringify(data.times[i][j])+']').attr('style','background-color:#f1f1c1')
+      });
+    });
+    $('#allCourses').on('change',function(event){
+      var val = $('#allCourses').find(':selected').text();
+      currentVal = $('#course').val();
+
+      //val = val.substr(0,val.length);
+      val = (currentVal == '')?val: ','+val;
+      $('#course').val(currentVal + val);
+    });
+    $('#send').on('click',function (event) {
+      var courses = [];
+      var input = $('#course').val().split(',');
+      for (x in input) {
+        courses.push(input[x]);
+      }
+      $('.loading').append('<img class="loader" src="/img/ajax-loader.gif"></img>');
+        $.post('/process',{
+          'courses': courses
+        }).done(function(data) {
+          $('.loader').remove();
+          $('.timetable').find('td:not(.times)').html('-');
+          $('.timetable').find('td:not(.times)').attr('style','');
+          if(data.complete) {
+            //$('#courses').append("<h2> These are the time slots for "+data.names+"</h2>");
+            if(data.times == 'No Solution') {
+              $("#courses").append('No Solution');
+            }
+            else {
+              for(i in data.times) {
+                //$("#courses").append(data.names.split(' and ')[i]+' '+JSON.stringify(data.times[i])+'<br>');
+                for(j in data.times[i]) {
+                  var name = data.names.split(' and ')[i];
+                  $('[id='+JSON.stringify(data.times[i][j])+']').html('<a target=_blank href=https://w5.ab.ust.hk/wcq/cgi-bin/1530/subject/'+name.substr(0,4)+
+                  '/#'+name.substr(0,4)+name.substr(5,9)+ '>'+data.names.split(' and ')[i]+'</a>');
+                  $('[id='+JSON.stringify(data.times[i][j])+']').attr('style','background-color:#f1f1c1')
+                }
               }
             }
           }
-        }
-        else {
-          $('#courses').append("<h2> No Solution found for "+data.names+"</h2>");
-        }
-        $.post('/available',{
-          'subjects': $('#availableSubjects option:selected').text(),
-          'currentSchedule': data.times
-        }).done(function(data) {
-          $('.courseDisplay').html('');
-          for(var i in data) {
-            $('.courseDisplay').append('<p>'+data[i]+'</p>');
+          else {
+            $('#courses').append("<h2> No Solution found for "+data.names+"</h2>");
           }
+          $.post('/available',{
+            'subjects': $('#availableSubjects option:selected').text(),
+            'currentSchedule': data.times
+          }).done(function(data) {
+            $('.courseDisplay').html('');
+            for(var i in data) {
+              $('.courseDisplay').append('<p>'+data[i]+'</p>');
+            }
+          });
         });
       });
-    });
 </script>
 </html>
