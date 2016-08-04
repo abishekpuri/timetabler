@@ -127,12 +127,12 @@
             $('#courses').append("<h2> No Solution found for "+data.names+"</h2>");
           }
           $.post('/available',{
-            alert();
+            console.log("Finding Available");
             'subjects': $('#availableSubjects option:selected').text(),
             'currentSchedule': data.times
           }).done(function(data) {
-            alert();
-            alert(JSON.stringify(data));
+            console.log("FOUND");
+            console.log(JSON.stringify(data));
             $('.courseDisplay').html('');
             for(var i in data) {
               $('.courseDisplay').append('<p>'+data[i]+'</p>');
