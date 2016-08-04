@@ -127,11 +127,11 @@
             $('#courses').append("<h2> No Solution found for "+data.names+"</h2>");
           }
           $.post('/available',{
-            alert("FINDING AVAILABLE");
+            alert();
             'subjects': $('#availableSubjects option:selected').text(),
             'currentSchedule': data.times
           }).done(function(data) {
-            alert("FOUND AVAILABLE");
+            alert();
             alert(JSON.stringify(data));
             $('.courseDisplay').html('');
             for(var i in data) {
