@@ -127,7 +127,6 @@
             $('#courses').append("<h2> No Solution found for "+data.names+"</h2>");
           }
           $.post('/available',{
-            console.log("Finding Available");
             'subjects': $('#availableSubjects option:selected').text(),
             'currentSchedule': data.times
           }).done(function(data) {
