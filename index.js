@@ -44,7 +44,7 @@ var currentTime;
 app.post("/process", function(req,res) {
   preprocessor.preprocess(req.body.courses, function(result) {
     res.send(result);
-    currentTIme = _.flatten(result.times);
+    currentTime = _.flatten(result.times);
   });
 });
 
@@ -60,16 +60,19 @@ app.post('/available',function(req,res) {
   courses = courses.filter(function(i) {
     return (i.substr(0,4) == req.body.subjects.trim());
   });
+  courses = courses.slice(0,10);
   console.log('',courses);
-  var myTimes = [];
-  myTimes.push(_.flatten(req.body.currentSchedule));
+  console.log(currentTime);
+  var myTimes = [currentTime];
+  //myTimes.push(_.flatten(req.body.currentSchedule));
   var list = [];
   preprocessor.preprocess(courses, function(result) {
     for (var i in result.allTimes) {
       var checkArray = [];
       checkArray.push(result.allTimes[i]);
       checkArray.push(myTimes);
-      var noConflict = solutionFinder.isSchedule(checkArray).complete;
+      var noConflict = solutionFinder.isSchedule(checkArray);
+      console.log(noConflict);
       if(noConflict) {
         list.push(result.names.split(' and ')[i]);
       }

@@ -41,6 +41,6 @@ module.exports = function(grunt) {
   });
   grunt.registerTask('test',['jshint','concurrent']);
   grunt.registerTask('default', ['jshint', 'exec:start']);
-  grunt.registerTask('start', ['exec:docgen','jshint','foreman']);
+  grunt.registerTask('start', ['exec:docgen','foreman','watch']);
   grunt.registerTask('foreman', ['exec:start']);
 };

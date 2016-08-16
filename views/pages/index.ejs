@@ -6,6 +6,7 @@
 <body>
   <h2 align='center'> Timetabler </h2>
   <div id="courses">
+    <h1 id="announcement"></h1>
   </div>
   <br><br>
   View a courses timetable <br>
@@ -26,6 +27,8 @@
 <div class ='loading'>
 </div>
 <div class='masterDiv'>
+  <h3> Total Credits Taken </h3>
+  <h4 id="credits"></h4>
   <div class= 'availableCourses' style='width: 20%; float:left'>
     <p> Find Available Courses given your current schedule : </p>
     <select id='availableSubjects'>
@@ -64,7 +67,7 @@
     $('td:last').after('</tr>');
   }
     $('#clear').on('click',function(event) {
-      $('#courses').html('<div></div>');
+      $('#courses').html('<div><h1 id="announcement"></h1></div>');
       $('#course').val('');
     });
     $('#allSubjects').on('change',function(event){
@@ -109,34 +112,31 @@
           if(data.complete) {
             //$('#courses').append("<h2> These are the time slots for "+data.names+"</h2>");
             if(data.times == 'No Solution') {
-              $("#courses").append('No Solution');
+              $("#announcement").text('No Solution');
             }
             else {
               for(i in data.times) {
                 //$("#courses").append(data.names.split(' and ')[i]+' '+JSON.stringify(data.times[i])+'<br>');
                 for(j in data.times[i]) {
                   var name = data.names.split(' and ')[i];
-                  $('[id='+JSON.stringify(data.times[i][j])+']').html('<a target=_blank href=https://w5.ab.ust.hk/wcq/cgi-bin/1530/subject/'+name.substr(0,4)+
+                  $('[id='+JSON.stringify(data.times[i][j])+']').html('<a target=_blank href=https://w5.ab.ust.hk/wcq/cgi-bin/1610/subject/'+name.substr(0,4)+
                   '/#'+name.substr(0,4)+name.substr(5,9)+ '>'+data.names.split(' and ')[i]+'</a>');
-                  $('[id='+JSON.stringify(data.times[i][j])+']').attr('style','background-color:#f1f1c1')
+                  $('[id='+JSON.stringify(data.times[i][j])+']').attr('style','background-color:#f1f1c1');
                 }
               }
             }
+            if(data.missing != "Couldn't Fit ") {
+              $('#announcement').text(data.missing);
+            }
+            else {
+              $('#announcement').text("");
+            }
+            $('#credits').text(data.credits);
           }
           else {
-            $('#courses').append("<h2> No Solution found for "+data.names+"</h2>");
+            $('#credits').text('-');
+            $('#announcement').text("No Solution found for "+data.names);
           }
-          /*$.post('/available',{
-            'subjects': $('#availableSubjects option:selected').text(),
-            'currentSchedule': data.times
-          }).done(function(data) {
-            console.log("FOUND");
-            console.log(JSON.stringify(data));
-            $('.courseDisplay').html('');
-            for(var i in data) {
-              $('.courseDisplay').append('<p>'+data[i]+'</p>');
-            }
-          });*/
         });
       });
 </script>

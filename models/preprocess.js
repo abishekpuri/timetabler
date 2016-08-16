@@ -8,9 +8,11 @@ var cheerio = require("cheerio");
 var _ = require('underscore');
 var solutionFinder = require('./solutionFinder.js');
 var timeHandling = require('./timeHandling.js');
-
+var courselist;
+var missingcourses = "Couldn't Fit ";
 /* jshint esnext: true */
 function preprocess(courses, callback) {
+  missingcourses = "Couldn't Fit ";
   var coursePairs = [];
   var subjects = new Set();
   // step 1: generate course pairs of the form [subject, code]
@@ -53,8 +55,14 @@ function preprocess(courses, callback) {
       $(".course").each(function(index, elem) {
         var current = $(this);
         var courseName = $(this).children("h2").text().split('-')[0];
+        var credits = $(this).children("h2").text().split('(')[1][0];
+        // This is to get the credits from (), need the if for (MAthematics) etc
+        if(isNaN(credits)) {
+          credits = $(this).children("h2").text().split('(')[2][0];
+        }
         courseName = courseName.substr(0,courseName.length-1);
         courses[courseName] = {};
+        courses[courseName].credits = credits;
         courses[courseName].course = courseName;
         if ($(this).children(".courseinfo").find(".matching").length) {
           courses[courseName].isMatching = true;
@@ -142,7 +150,7 @@ function preprocess(courses, callback) {
     courses = selectedCourses;
     allTimes = [];
     names = '';
-
+    credits = courses.reduce((a, b) => a + parseInt(b.credits), 0);
     /* jshint shadow:true */
     for(var i = 0; i < courses.length; ++i) {
       names += courses[i].course + ' and ';
@@ -182,10 +190,16 @@ function preprocess(courses, callback) {
           }
         }
       }
+      /* Hard Coded it for my own course requirements
+      TODO: Add a way to input required courses, use this location as some filter
+      point */
+      if(courses[i].course == "MATH 4999") {
+        courseTimesTest = [courseTimesTest[3]];
+      }
+      courselist = courses;
       allTimes.push(courseTimesTest);
     }
     names = names.substr(0,names.length - 5);
-
     // THis is the hauton borrowed implementation (ty hauton)
     for (var i in allTimes) {
       for (var k in allTimes[i]) {
@@ -193,12 +207,21 @@ function preprocess(courses, callback) {
       }
     }
     var solution = solutionFinder.isSchedule(allTimes);
+    while(!solution.complete) {
+      allTimes.pop();
+      removedCourse = courselist.pop();
+      credits -= removedCourse.credits
+      missingcourses += removedCourse.course + ", "
+      solution = solutionFinder.isSchedule(allTimes);
+    }
     // Once the full matching function is made, this will be the callback for it
     callback({
       'complete': solution.complete,
       'times': solution.timeSlots,
       'names':names,
-      'allTimes': allTimes
+      'allTimes': allTimes,
+      'missing' : missingcourses,
+      'credits': parseInt(credits)
     });
   }
 }
