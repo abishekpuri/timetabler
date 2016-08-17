@@ -10,7 +10,7 @@
   </div>
   <br><br>
   View a courses timetable <br>
-  <input type='textarea' id='course'size='80'>
+  <input type='textarea' id='course'size='80' value="MATH 4999,HUMA 1920,COMP 4632,COMP 4911,ECON 4374,ECON 4474,MATH 3423">
   <br>
   <button id='send'>View </button>
 <button id='clear'>Clear All </button>
@@ -36,7 +36,8 @@
         %> <option value="<%=allSubjects[i]%>"> <%=allSubjects[i]%> </option><%
       } %>
     </select>
-    <div class= 'courseDisplay'>
+    <button id="available">Click to see available </button>
+    <div id= 'courseDisplay'>
     </div>
   </div>
   <div style="width: 80%; float:right">
@@ -96,6 +97,27 @@
       val = (currentVal == '')?val: ','+val;
       $('#course').val(currentVal + val);
     });
+    $("#available").on('click', function (event) {
+      var courses = [];
+      var input = $('#course').val().split(',');
+      for (x in input) {
+        courses.push(input[x]);
+      }
+      $('.loading').append('<img class="loader" src="/img/ajax-loader.gif"></img>');
+      filter = $('#availableSubjects option:selected').text().trim();
+      $.post('/attempt',{
+        'courses': courses,
+        'subjectFilter': filter
+      }).done(function(data) {
+        $("#courseDisplay").text("");
+        $('.loader').remove();
+        for (x in data) {
+          if(data[x].substr(0,4) == filter) {
+            $("#courseDisplay").append("<li>"+data[x]+"</li>");
+          }
+        }
+      })
+    })
     $('#send').on('click',function (event) {
       var courses = [];
       var input = $('#course').val().split(',');

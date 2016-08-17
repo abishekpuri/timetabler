@@ -43,26 +43,51 @@ app.get("/", function(req, res) {
 var currentTime;
 app.post("/process", function(req,res) {
   preprocessor.preprocess(req.body.courses, function(result) {
+    currentTime = [_.flatten(result.times)];
     res.send(result);
-    currentTime = _.flatten(result.times);
   });
 });
 
+app.post("/attempt",  function(req,res) {
+  courses = req.body.courses;
+  attempts = [];
+  console.log(req.body.subjectFilter);
+  neededCourses = courseList.allCourses.filter(function(x) {
+    return x.substr(0,4) == req.body.subjectFilter & x[5] <= 4;
+  });
+  attempts = neededCourses;
+  success = [];
+  done = 0;
+  for (x in attempts) {
+    courses.push(attempts[x]);
+    preprocessor.preprocess(courses,function(result) {
+      names = result.names.split('and ');
+      thecoursename = names[names.length - 1];
+      done += 1;
+      if (result.complete) {
+        console.log(thecoursename);
+        success.push(thecoursename);
+      }
+      if (done == attempts.length) {
+        res.send(success);
+      }
+    })
+    courses.pop();
+  }
+})
 /* magic: do not sneeze in its presence */
 app.get("/preprocessTest", function(req, res) {
   testPreprocessor.preprocess(["MATH 2352", "COMP 1022P"], function(result) {
     res.send(result);
   });
 });
-
+// COmpletely broken
 app.post('/available',function(req,res) {
   var courses = courseList.allCourses;
   courses = courses.filter(function(i) {
     return (i.substr(0,4) == req.body.subjects.trim());
   });
   courses = courses.slice(0,10);
-  console.log('',courses);
-  console.log(currentTime);
   var myTimes = [currentTime];
   //myTimes.push(_.flatten(req.body.currentSchedule));
   var list = [];
@@ -71,8 +96,7 @@ app.post('/available',function(req,res) {
       var checkArray = [];
       checkArray.push(result.allTimes[i]);
       checkArray.push(myTimes);
-      var noConflict = solutionFinder.isSchedule(checkArray);
-      console.log(noConflict);
+      var noConflict = solutionFinder.isScheduleAvailable(checkArray);
       if(noConflict) {
         list.push(result.names.split(' and ')[i]);
       }

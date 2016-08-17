@@ -145,7 +145,9 @@ function preprocess(courses, callback) {
     selectedCourses = [];
     for(var i = 0; i < coursePairs.length; i++) {
       var name = coursePairs[i][0] + ' ' + coursePairs[i][1];
-      selectedCourses.push(courses[name]);
+      if(courses[name] !== undefined) {
+        selectedCourses.push(courses[name]);
+      }
     }
     courses = selectedCourses;
     allTimes = [];
@@ -207,13 +209,13 @@ function preprocess(courses, callback) {
       }
     }
     var solution = solutionFinder.isSchedule(allTimes);
-    while(!solution.complete) {
+    /*while(!solution.complete) {
       allTimes.pop();
       removedCourse = courselist.pop();
       credits -= removedCourse.credits
       missingcourses += removedCourse.course + ", "
       solution = solutionFinder.isSchedule(allTimes);
-    }
+    }*/
     // Once the full matching function is made, this will be the callback for it
     callback({
       'complete': solution.complete,
