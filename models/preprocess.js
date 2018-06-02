@@ -27,7 +27,7 @@ function preprocess(courses, callback) {
 
   // step 3: get HTML for each subject
   function getDom(subject) {
-    request("https://w5.ab.ust.hk/wcq/cgi-bin/1710/subject/" + subject,
+    request("https://w5.ab.ust.hk/wcq/cgi-bin/1740/subject/" + subject,
     function(error, response, body) {
       ++counter;
       subjectDoms[subject] = body;
