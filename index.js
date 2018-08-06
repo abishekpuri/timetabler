@@ -13,7 +13,9 @@ var courseList = require("./models/courseList.js");
 var testPreprocessor = require("./models/preprocessTesting.js");
 var solutionFinder = require('./models/solutionFinder.js');
 /* jshint esnext: true */
-
+var allCourses = ''
+var allSubjects = ''
+var allInfo = ''
 /**
  * @summary The default port that node will run on.
  * @constant
@@ -32,13 +34,17 @@ app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 
 app.get("/", function(req, res) {
-  var allCourses = courseList.allCourses;
-  var allSubjects = courseList.allSubjects;
-  res.render('pages/index', {
-    'courses': [],
-    'allCourses': allCourses,
-    'allSubjects': allSubjects
-  });
+  courseList.getCourses(function(data) {
+    allCourses = data[0];
+    allSubjects = data[1];
+    allInfo = data[2];
+    res.render('pages/index', {
+      'courses': [],
+      'allCourses': allCourses,
+      'allSubjects': allSubjects
+    });
+
+  })
 });
 var currentTime;
 app.post("/process", function(req,res) {
@@ -48,12 +54,24 @@ app.post("/process", function(req,res) {
   });
 });
 
+app.post("/getInfo", function (req,res) {
+  vals = [];
+  console.log(req.body.courses)
+  courses = req.body.courses.split(",")
+  console.log(courses)
+  for (course in courses) {
+    pos = allCourses.indexOf(courses[course])
+    vals.push(allInfo[pos].split(" //// ")[0])
+  }
+  res.send(vals)
+})
+
 app.post("/attempt",  function(req,res) {
   courses = req.body.courses;
   attempts = [];
-  console.log(req.body.subjectFilter);
-  neededCourses = courseList.allCourses.filter(function(x) {
-    return x.substr(0,4) == req.body.subjectFilter & x[5] <= 4;
+  console.log(allCourses)
+  neededCourses = allCourses.filter(function(x) {
+    return x.substr(0,4) == req.body.subjectFilter & x[5] >= req.body.lowerBound & x[5] <= req.body.upperBound;
   });
   attempts = neededCourses;
   success = [];
@@ -66,7 +84,9 @@ app.post("/attempt",  function(req,res) {
       done += 1;
       if (result.complete) {
         console.log(thecoursename);
-        success.push(thecoursename);
+        pos = allCourses.indexOf(thecoursename)
+        success.push(allInfo[pos].split(" //// ")[0])
+        //success.push(thecoursename);
       }
       if (done == attempts.length) {
         res.send(success);
@@ -81,31 +101,7 @@ app.get("/preprocessTest", function(req, res) {
     res.send(result);
   });
 });
-// COmpletely broken
-app.post('/available',function(req,res) {
-  var courses = courseList.allCourses;
-  courses = courses.filter(function(i) {
-    return (i.substr(0,4) == req.body.subjects.trim());
-  });
-  courses = courses.slice(0,10);
-  var myTimes = [currentTime];
-  //myTimes.push(_.flatten(req.body.currentSchedule));
-  var list = [];
-  preprocessor.preprocess(courses, function(result) {
-    for (var i in result.allTimes) {
-      var checkArray = [];
-      checkArray.push(result.allTimes[i]);
-      checkArray.push(myTimes);
-      var noConflict = solutionFinder.isScheduleAvailable(checkArray);
-      if(noConflict) {
-        list.push(result.names.split(' and ')[i]);
-      }
-      if(i == result.allTimes.length - 1) {
-        res.send(list);
-      }
-    }
-  });
-});
+
 app.use(function(req, res, next) {
   res.status(404);
   res.format({

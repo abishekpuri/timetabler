@@ -9,50 +9,54 @@
     <h1 id="announcement"></h1>
   </div>
   <br><br>
-  View a courses timetable <br>
-  <input type='textarea' id='course'size='80' value="MATH 4999,HUMA 1920,COMP 4632,COMP 4911,ECON 4374,ECON 4474,MATH 3423">
-  <br>
-  <button id='send'>View </button>
-<button id='clear'>Clear All </button>
-<select id='allSubjects'>
-  <% for (i in allSubjects) {
-    %> <option value="<%=allSubjects[i]%>"> <%=allSubjects[i]%> </option><%
-  }%>
-</select>
-<select id='allCourses'>
-  <% for (i in allCourses) {
-    %> <option value="<%=allCourses[i]%>"> <%=allCourses[i]%> </option><%
-  }%>
-</select>
-<div class ='loading'>
-</div>
-<div class='masterDiv'>
-  <h3> Total Credits Taken </h3>
-  <h4 id="credits"></h4>
-  <div class= 'availableCourses' style='width: 20%; float:left'>
-    <p> Find Available Courses given your current schedule : </p>
-    <select id='availableSubjects'>
+  <div class='masterDiv'>
+    <div class='leftDiv' style='width:30%; float: left'>
+      View a courses timetable <br>
+      <input type='textarea' id='course' size='80' value="">
+      <br>
+      <button id='send'>View </button>
+    <button id='clear'>Clear All </button>
+    <select id='allSubjects'>
       <% for (i in allSubjects) {
         %> <option value="<%=allSubjects[i]%>"> <%=allSubjects[i]%> </option><%
-      } %>
+      }%>
     </select>
-    <button id="available">Click to see available </button>
-    <div id= 'courseDisplay'>
+    <select id='allCourses'>
+      <% for (i in allCourses) {
+        %> <option value="<%=allCourses[i]%>"> <%=allCourses[i]%> </option><%
+      }%>
+    </select>
+    <div class ='loading'>
+    </div>
+    <h3> Total Credits Taken </h3>
+    <h4 id="credits"></h4>
+    <div class= 'availableCourses' style='float:left'>
+      <p> Find Available Courses given your current schedule : </p>
+      <select id='availableSubjects'>
+        <% for (i in allSubjects) {
+          %> <option value="<%=allSubjects[i]%>"> <%=allSubjects[i]%> </option><%
+        } %>
+      </select>
+      <input type='number' id='lowerBound' value=4></input> -
+      <input type='number' id='upperBound' value=5></input>
+      <button id="available">Click to see available </button>
+      <div id= 'courseDisplay'>
+      </div>
     </div>
   </div>
-  <div style="width: 80%; float:right">
-    <table class='timetable' style='border:1px;margin-right:50px' align='right'>
-      <tr>
-          <th>Time</th>
-          <th>Monday</th>
-          <th>Tuesday</th>
-          <th>Wednesday</th>
-          <th>Thursday</th>
-          <th>Friday</th>
-      </tr>
-    </table>
+    <div class='rightDiv' style='width: 70%; float: left'>
+      <table class='timetable' style='height:100%;width:80%;border:1px;margin-right:50px' align='right'>
+        <tr>
+            <th>Time</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+        </tr>
+      </table>
+    </div>
   </div>
-</div>
 <p style="margin-top:550px" align='center'> &copy Abishek Puri and Hauton Tsang 2016 </p>
 </body>
 <script>
@@ -89,13 +93,14 @@
           }
       });
     });
-    $('#allCourses').on('change',function(event){
-      var val = $('#allCourses').find(':selected').text();
-      currentVal = $('#course').val();
 
-      //val = val.substr(0,val.length);
-      val = (currentVal == '')?val: ','+val;
+    function addCourseToTimetable(course) {
+      currentVal = $("#course").val();
+      val = (currentVal == '')? course.trim(): ','+course.trim();
       $('#course').val(currentVal + val);
+    }
+    $('#allCourses').on('change',function(event){
+      addCourseToTimetable($('#allCourses').find(':selected').text());
     });
     $("#available").on('click', function (event) {
       var courses = [];
@@ -107,13 +112,17 @@
       filter = $('#availableSubjects option:selected').text().trim();
       $.post('/attempt',{
         'courses': courses,
-        'subjectFilter': filter
+        'subjectFilter': filter,
+        'lowerBound': parseInt($("#lowerBound").val()),
+        'upperBound': parseInt($("#upperBound").val())
       }).done(function(data) {
         $("#courseDisplay").text("");
         $('.loader').remove();
+        data = data.sort()
+        console.log(data)
         for (x in data) {
           if(data[x].substr(0,4) == filter) {
-            $("#courseDisplay").append("<li>"+data[x]+"</li>");
+            $("#courseDisplay").append("<li>"+data[x]+"<button onclick='addCourseToTimetable(" + JSON.stringify(data[x]) + ")'>Add</button></li>");
           }
         }
       })
