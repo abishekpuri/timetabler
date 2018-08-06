@@ -122,7 +122,7 @@
         console.log(data)
         for (x in data) {
           if(data[x].substr(0,4) == filter) {
-            $("#courseDisplay").append("<li>"+data[x]+"<button onclick='addCourseToTimetable(" + JSON.stringify(data[x]) + ")'>Add</button></li>");
+            $("#courseDisplay").append("<li>"+data[x]+"<button onclick='addCourseToTimetable(" + JSON.stringify(data[x].split(" -")[0]) + ")'>Add</button></li>");
           }
         }
       })
