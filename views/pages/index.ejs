@@ -142,7 +142,7 @@
                 for(j in data.times[i]) {
                   var name = data.names.split(' and ')[i];
                   $('[id='+JSON.stringify(data.times[i][j])+']').html('<a target=_blank href=https://w5.ab.ust.hk/wcq/cgi-bin/1810/subject/'+name.substr(0,4)+
-                  '/#'+name.substr(0,4)+name.substr(5,9)+ '>'+data.names.split(' and ')[i]+'</a>');
+                  '#'+name.substr(0,4)+name.substr(5,9)+ '>'+data.names.split(' and ')[i]+'</a>');
                   $('[id='+JSON.stringify(data.times[i][j])+']').attr('style','background-color:#f1f1c1');
                 }
               }
