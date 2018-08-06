@@ -5,6 +5,7 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var _ = require('underscore');
+var debug = require('debug')('http')
 var app = express();
 
 var preprocessor = require("./models/preprocess.js");
@@ -24,7 +25,7 @@ var allInfo = ''
 const DEFAULT_FALLBACK_PORT = 5000;
 
 app.use(express.static(__dirname + "/public"));
-
+debug('Starting App')
 // extended = true to support nested JSON objects in requests
 // this is utilized extensively for package requests
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -50,15 +51,16 @@ var currentTime;
 app.post("/process", function(req,res) {
   preprocessor.preprocess(req.body.courses, function(result) {
     currentTime = [_.flatten(result.times)];
+    debug("Process",result)
     res.send(result);
   });
 });
 
 app.post("/getInfo", function (req,res) {
   vals = [];
-  console.log(req.body.courses)
+  debug(req.body.courses)
   courses = req.body.courses.split(",")
-  console.log(courses)
+  debug(courses)
   for (course in courses) {
     pos = allCourses.indexOf(courses[course])
     vals.push(allInfo[pos].split(" //// ")[0])
@@ -69,7 +71,7 @@ app.post("/getInfo", function (req,res) {
 app.post("/attempt",  function(req,res) {
   courses = req.body.courses;
   attempts = [];
-  console.log(allCourses)
+  debug(allCourses)
   neededCourses = allCourses.filter(function(x) {
     return x.substr(0,4) == req.body.subjectFilter & x[5] >= req.body.lowerBound & x[5] <= req.body.upperBound;
   });
@@ -83,7 +85,7 @@ app.post("/attempt",  function(req,res) {
       thecoursename = names[names.length - 1];
       done += 1;
       if (result.complete) {
-        console.log(thecoursename);
+        debug(thecoursename);
         pos = allCourses.indexOf(thecoursename)
         success.push(allInfo[pos].split(" //// ")[0])
         //success.push(thecoursename);
@@ -121,5 +123,5 @@ app.use(function(req, res, next) {
 });
 
 app.listen(app.get("port"), function() {
-  console.log("Node app is running on port", app.get("port"));
+  debug("Node app is running on port", app.get("port"));
 });

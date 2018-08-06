@@ -6,6 +6,7 @@ var https = require('https');
 var request = require("request");
 var cheerio = require("cheerio");
 var _ = require('underscore');
+var debug = require("debug")('http');
 var solutionFinder = require('./solutionFinder.js');
 var timeHandling = require('./timeHandling.js');
 var courselist;
@@ -152,6 +153,7 @@ function preprocess(courses, callback) {
     courses = selectedCourses;
     allTimes = [];
     names = '';
+    debug(JSON.stringify(courses))
     credits = courses.reduce((a, b) => a + parseInt(b.credits), 0);
     /* jshint shadow:true */
     for(var i = 0; i < courses.length; ++i) {

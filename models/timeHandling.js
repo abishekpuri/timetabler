@@ -1,8 +1,18 @@
+var debug = require("debug")('http');
+
 module.exports = {
   processIntoTimeIntervals : function processIntoTimeIntervals(timeArray) {
+    debug("Processing Time Intervals",timeArray)
     var returnArray = [];
     for (var i = 0; i < timeArray.length; ++i) {
-      var timeIntervalString = timeArray[i];
+      timing = timeArray[i].split("2018")
+      if (timing.length > 1) {
+        timeIntervalString = timing[2]
+      } else {
+        timeIntervalString = timing[0]
+      }
+      debug(timeIntervalString)
+      //var timeIntervalString = timeArray[i];
       var daysOfWeekArray = [];
       var daysOfWeek =
         timeIntervalString.substr(0, timeIntervalString.indexOf(" "));
@@ -23,6 +33,7 @@ module.exports = {
         }
       }
     }
+    debug("Return Time Interval",returnArray)
     return returnArray;
   },
   parseTime : function parseTime(startTime, endTime) {

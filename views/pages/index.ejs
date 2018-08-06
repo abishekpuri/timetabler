@@ -53,6 +53,7 @@
             <th>Wednesday</th>
             <th>Thursday</th>
             <th>Friday</th>
+            <th>Saturday</th>
         </tr>
       </table>
     </div>
@@ -60,8 +61,8 @@
 <p style="margin-top:550px" align='center'> &copy Abishek Puri and Hauton Tsang 2016 </p>
 </body>
 <script>
-  var days = ['Mo ','Tu ','We ','Th ','Fr '];
-  var times = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+  var days = ['Mo ','Tu ','We ','Th ','Fr ','Sa'];
+  var times = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00'];
   //initiliaze the timetable
   for(var i = 1;i < times.length;++i) {
     $('.timetable tr:last').after('<tr><td class=times>'+times[i-1]+'-'+times[i]+'</td>');
@@ -146,6 +147,7 @@
               $("#announcement").text('No Solution');
             }
             else {
+              console.log(data)
               for(i in data.times) {
                 //$("#courses").append(data.names.split(' and ')[i]+' '+JSON.stringify(data.times[i])+'<br>');
                 for(j in data.times[i]) {
