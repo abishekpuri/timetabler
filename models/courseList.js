@@ -12,7 +12,7 @@ var cheerio = require("cheerio");
 
 function getCourses(callback) {
   a = '';
-  request('https://w5.ab.ust.hk/wcq/cgi-bin/1810/', function(err,res,body) {
+  request('https://w5.ab.ust.hk/wcq/cgi-bin/1830/', function(err,res,body) {
     a = body;
     a = a.split("var allcourses = ")[1]
     a = a.split(';\nvar allinstructors = ')[0]
