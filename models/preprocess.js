@@ -9,6 +9,7 @@ var _ = require('underscore');
 var debug = require("debug")('http');
 var solutionFinder = require('./solutionFinder.js');
 var timeHandling = require('./timeHandling.js');
+var code = require("./code.js").code;
 var courselist;
 var missingcourses = "Couldn't Fit ";
 /* jshint esnext: true */
@@ -28,7 +29,7 @@ function preprocess(courses, callback) {
 
   // step 3: get HTML for each subject
   function getDom(subject) {
-    request("https://w5.ab.ust.hk/wcq/cgi-bin/1830/subject/" + subject,
+    request("https://w5.ab.ust.hk/wcq/cgi-bin/"+ code + "/subject/" + subject,
     function(error, response, body) {
       ++counter;
       subjectDoms[subject] = body;

@@ -9,10 +9,10 @@
 });*/
 var request = require("request");
 var cheerio = require("cheerio");
-
+var code = require("./code.js").code;
 function getCourses(callback) {
   a = '';
-  request('https://w5.ab.ust.hk/wcq/cgi-bin/1830/', function(err,res,body) {
+  request('https://w5.ab.ust.hk/wcq/cgi-bin/' + code + '/', function(err,res,body) {
     a = body;
     a = a.split("var allcourses = ")[1]
     a = a.split(';\nvar allinstructors = ')[0]

@@ -10,7 +10,7 @@ var app = express();
 
 var preprocessor = require("./models/preprocess.js");
 var courseList = require("./models/courseList.js");
-
+var code = require("./models/code.js").code;
 var testPreprocessor = require("./models/preprocessTesting.js");
 var solutionFinder = require('./models/solutionFinder.js');
 /* jshint esnext: true */
@@ -52,6 +52,7 @@ app.post("/process", function(req,res) {
   preprocessor.preprocess(req.body.courses, function(result) {
     currentTime = [_.flatten(result.times)];
     debug("Process",result)
+    result.code = code;
     res.send(result);
   });
 });
@@ -75,6 +76,10 @@ app.post("/attempt",  function(req,res) {
   neededCourses = allCourses.filter(function(x) {
     return x.substr(0,4) == req.body.subjectFilter & x[5] >= req.body.lowerBound & x[5] <= req.body.upperBound;
   });
+  debug(neededCourses)
+  if (neededCourses.length == 0) {
+    res.send([])
+  }
   attempts = neededCourses;
   success = [];
   done = 0;

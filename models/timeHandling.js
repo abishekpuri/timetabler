@@ -4,32 +4,34 @@ module.exports = {
   processIntoTimeIntervals : function processIntoTimeIntervals(timeArray) {
     debug("Processing Time Intervals",timeArray)
     var returnArray = [];
-    for (var i = 0; i < timeArray.length; ++i) {
-      timing = timeArray[i].split("2018")
-      if (timing.length > 1) {
-        timeIntervalString = timing[2]
-      } else {
-        timeIntervalString = timing[0]
-      }
-      debug(timeIntervalString)
-      //var timeIntervalString = timeArray[i];
-      var daysOfWeekArray = [];
-      var daysOfWeek =
-        timeIntervalString.substr(0, timeIntervalString.indexOf(" "));
-      while (daysOfWeek.length !== 0) {
-        daysOfWeekArray.push(daysOfWeek.substr(0, 2));
-        daysOfWeek = daysOfWeek.substr(2);
-      }
-      var timeInterval =
-        timeIntervalString.substr(timeIntervalString.indexOf(" ") + 1);
-      var startTime = timeInterval.substr(0, timeInterval.indexOf(" "));
-      var endTime = timeInterval.substr(timeInterval.lastIndexOf(" ") + 1);
-      var timeIntervalArray = this.parseTime(startTime, endTime);
+    if (timeArray !== undefined) {
+      for (var i = 0; i < timeArray.length; ++i) {
+        timing = timeArray[i].split("2018")
+        if (timing.length > 1) {
+          timeIntervalString = timing[2]
+        } else {
+          timeIntervalString = timing[0]
+        }
+        debug(timeIntervalString)
+        //var timeIntervalString = timeArray[i];
+        var daysOfWeekArray = [];
+        var daysOfWeek =
+          timeIntervalString.substr(0, timeIntervalString.indexOf(" "));
+        while (daysOfWeek.length !== 0) {
+          daysOfWeekArray.push(daysOfWeek.substr(0, 2));
+          daysOfWeek = daysOfWeek.substr(2);
+        }
+        var timeInterval =
+          timeIntervalString.substr(timeIntervalString.indexOf(" ") + 1);
+        var startTime = timeInterval.substr(0, timeInterval.indexOf(" "));
+        var endTime = timeInterval.substr(timeInterval.lastIndexOf(" ") + 1);
+        var timeIntervalArray = this.parseTime(startTime, endTime);
 
-      // cartesian product
-      for (var j = 0; j < daysOfWeekArray.length; ++j) {
-        for (var k = 0; k < timeIntervalArray.length; ++k) {
-          returnArray.push(daysOfWeekArray[j] + " " + timeIntervalArray[k]);
+        // cartesian product
+        for (var j = 0; j < daysOfWeekArray.length; ++j) {
+          for (var k = 0; k < timeIntervalArray.length; ++k) {
+            returnArray.push(daysOfWeekArray[j] + " " + timeIntervalArray[k]);
+          }
         }
       }
     }

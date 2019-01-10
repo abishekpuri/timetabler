@@ -99,6 +99,7 @@
       currentVal = $("#course").val();
       val = (currentVal == '')? course.trim(): ','+course.trim();
       $('#course').val(currentVal + val);
+      $("#send").trigger("click");
     }
     $('#allCourses').on('change',function(event){
       addCourseToTimetable($('#allCourses').find(':selected').text());
@@ -152,12 +153,13 @@
                 //$("#courses").append(data.names.split(' and ')[i]+' '+JSON.stringify(data.times[i])+'<br>');
                 for(j in data.times[i]) {
                   var name = data.names.split(' and ')[i];
-                  $('[id='+JSON.stringify(data.times[i][j])+']').html('<a target=_blank href=https://w5.ab.ust.hk/wcq/cgi-bin/1810/subject/'+name.substr(0,4)+
+                  $('[id='+JSON.stringify(data.times[i][j])+']').html('<a target=_blank href=https://w5.ab.ust.hk/wcq/cgi-bin/' + data.code + '/subject/'+name.substr(0,4)+
                   '#'+name.substr(0,4)+name.substr(5,9)+ '>'+data.names.split(' and ')[i]+'</a>');
                   $('[id='+JSON.stringify(data.times[i][j])+']').attr('style','background-color:#f1f1c1');
                 }
               }
             }
+            $("#available").trigger("click");
             if(data.missing != "Couldn't Fit ") {
               $('#announcement').text(data.missing);
             }
